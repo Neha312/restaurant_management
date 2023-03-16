@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Restaurant extends Model
+class Restaurant extends BaseModel
 {
     protected $fillable = [
         'id',
-        'owner_id',
+        'user_id',
+        'cousine_type_id',
         'name',
         'address1',
         'address2',
@@ -16,4 +17,14 @@ class Restaurant extends Model
         'zip_code',
         'phone'
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'restaurant_users', 'restaurant_id', 'user_id');
+    }
+
+    public function cousines()
+    {
+        return $this->belongsTo(CousineType::class, 'cuisine_type_id');
+    }
 }

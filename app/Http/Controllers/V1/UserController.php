@@ -73,8 +73,8 @@ class UserController extends Controller
             'address2'            => 'nullable|string|max:50',
             'zip_code'            => 'required|integer|min:6',
             'phone'               => 'nullable|integer|min:10',
-            'total_leave'         => 'required|integer|min:2',
-            'used_leave'          => 'nullable|integer|min:2',
+            'total_leave'         => 'required|numeric',
+            'used_leave'          => 'nullable|numeric',
         ]);
 
         $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
@@ -102,8 +102,8 @@ class UserController extends Controller
             'address2'            => 'nullable|string|max:50',
             'zip_code'            => 'nullable|integer|min:6',
             'phone'               => 'nullable|integer|min:10',
-            'total_leave'         => 'nullable|integer|min:2',
-            'used_leave'          => 'nullable|integer|min:2',
+            'total_leave'         => 'nullable|numeric',
+            'used_leave'          => 'nullable|numeric',
         ]);
 
         $user = User::findOrFail($id);
@@ -120,7 +120,7 @@ class UserController extends Controller
      */
     public function get($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with(['roles'])->findOrFail($id);
 
         return ok('User retrieved successfully', $user);
     }

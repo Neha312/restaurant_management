@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('zip_code', 6)->nullable();
             $table->string('phone', 10)->nullable();
             $table->timestamps();
+            $table->char('created_by')->nullable();
+            $table->char('updated_by')->nullable();
+            $table->char('deleted_by')->nullable();
 
             $table->foreign('service_type_id')->references('id')->on('service_types')->onDelete('cascade');
         });

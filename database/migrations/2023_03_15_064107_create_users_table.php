@@ -27,6 +27,9 @@ return new class extends Migration
             $table->char('total_leave', 2)->nullable();
             $table->char('used_leave', 2)->nullable();
             $table->timestamps();
+            $table->char('created_by')->nullable();
+            $table->char('updated_by')->nullable();
+            $table->char('deleted_by')->nullable();
 
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
         });

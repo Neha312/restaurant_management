@@ -104,7 +104,7 @@ class VendorController extends Controller
      */
     public function get($id)
     {
-        $vendor = Vendor::findOrFail($id);
+        $vendor = Vendor::with(['services'])->findOrFail($id);
 
         return ok('Vendor retrieved successfully', $vendor);
     }

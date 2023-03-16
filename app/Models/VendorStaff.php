@@ -2,10 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class VendorStaff extends Model
+class VendorStaff extends BaseModel
 {
-    use HasFactory;
+    protected $fillable = [
+        'id',
+        'vendor_id',
+        'stock_type_id',
+        'first_name',
+        'last_name',
+        'phone'
+    ];
+
+    public function vendors()
+    {
+        return $this->belongsTo(Vendor::class, 'vendor_id');
+    }
 }

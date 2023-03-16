@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Carbon;
 
 class RoleSeeder extends Seeder
 {
@@ -13,28 +15,48 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $role_admin = new Role();
-        $role_admin->name = 'Admin';
-        $role_admin->save();
+        // Role::truncate();
 
-        $role_chef = new Role();
-        $role_chef->name = 'Chef';
-        $role_chef->save();
-
-        $role_owner = new Role();
-        $role_owner->name = 'Owner';
-        $role_owner->save();
-
-        $role_waiter = new Role();
-        $role_waiter->name = 'Waiter';
-        $role_waiter->save();
-
-        $role_user = new Role();
-        $role_user->name = 'User';
-        $role_user->save();
-
-        $role_cashier = new Role();
-        $role_cashier->name = 'Cashier';
-        $role_cashier->save();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('roles')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $data = [
+            [
+                'name' => 'Admin',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Owner',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Manager',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'User',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Chef',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Waiter',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Cashier',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+        ];
+        Role::insert($data);
     }
 }

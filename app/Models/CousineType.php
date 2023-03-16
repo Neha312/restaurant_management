@@ -5,7 +5,7 @@ namespace App\Models;
 
 use App\Models\BaseModel;
 
-class StockType extends BaseModel
+class CousineType extends BaseModel
 {
     protected $fillable = [
         'id',

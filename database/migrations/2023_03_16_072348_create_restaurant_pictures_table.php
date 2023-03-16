@@ -11,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock_types', function (Blueprint $table) {
+        Schema::create('restaurant_pictures', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 30)->nullable();
+            $table->bigInteger('restaurant_id')->unsigned()->nullable();
+            $table->string('picture')->nullable();
+            $table->enum('type', ['M', 'O'])->comment('M: Menu,O: Other')->nullable();
             $table->timestamps();
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
+
+            $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_types');
+        Schema::dropIfExists('restaurant_pictures');
     }
 };

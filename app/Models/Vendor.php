@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Vendor extends Model
+class Vendor extends BaseModel
 {
     protected $fillable = [
         'id',
@@ -16,4 +16,8 @@ class Vendor extends Model
         'phone',
         'status'
     ];
+    public function services()
+    {
+        return $this->belongsTo(ServiceType::class, 'service_type_id');
+    }
 }

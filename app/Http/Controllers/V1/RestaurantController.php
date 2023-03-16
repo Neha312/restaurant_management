@@ -61,7 +61,8 @@ class RestaurantController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'owner_id'            => 'required|integer|exists:users,id',
+            'user_id'             => 'required|integer|exists:users,id',
+            'cousine_type_id'     => 'required|integer|exists:cousine_types,id',
             'name'                => 'required|string|max:30',
             'address1'            => 'required|string|max:50',
             'address2'            => 'nullable|string|max:50',
@@ -73,7 +74,8 @@ class RestaurantController extends Controller
         $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->profile_picture->getClientOriginalExtension();
         $request->profile_picture->storeAs("public/pictures", $imageName);
 
-        $restaurant = Restaurant::create($request->only('owner_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
+        $restaurant = Restaurant::create($request->only('user_id', 'cousine_type_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
+        $restaurant->users()->sync($request->user_id);
 
         return ok('Restaurant created successfully!',  $restaurant);
     }
@@ -87,7 +89,8 @@ class RestaurantController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'owner_id'            => 'nullable|integer|exists:users,id',
+            'user_id'             => 'nullable|integer|exists:users,id',
+            'cousine_type_id'     => 'nullable|integer|exists:cousine_types,id',
             'name'                => 'nullable|string|max:30',
             'address1'            => 'nullable|string|max:50',
             'address2'            => 'nullable|string|max:50',
@@ -101,7 +104,8 @@ class RestaurantController extends Controller
         $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->profile_picture->getClientOriginalExtension();
         $request->profile_picture->storeAs("public/pictures", $imageName);
 
-        $restaurant->update($request->only('owner_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
+        $restaurant->update($request->only('user_id', 'cousine_type_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
+        $restaurant->users()->sync($request->user_id);
 
         return ok('Restaurant updated successfully!',  $restaurant);
     }
@@ -114,7 +118,7 @@ class RestaurantController extends Controller
      */
     public function get($id)
     {
-        $restaurant = Restaurant::findOrFail($id);
+        $restaurant = Restaurant::with(['users', 'cousines'])->findOrFail($id);
 
         return ok('Restaurant retrieved successfully',  $restaurant);
     }

@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('restaurants', function (Blueprint $table) {
+        Schema::create('restaurant_stocks', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->bigInteger('restaurant_id')->unsigned()->nullable();
+            $table->bigInteger('stock_type_id')->unsigned()->nullable();
             $table->string('name', 50)->nullable();
-            $table->string('profile_picture')->nullable();
-            $table->string('address1', 50)->nullable();
-            $table->string('address2', 50)->nullable();
-            $table->string('zip_code', 6)->nullable();
-            $table->string('phone', 10)->nullable();
+            $table->string('available_quantity', 10)->nullable();
+            $table->string('minimum_quantity', 10)->nullable();
             $table->timestamps();
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
+            $table->foreign('stock_type_id')->references('id')->on('stock_types')->onDelete('cascade');
         });
     }
 
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('restaurants');
+        Schema::dropIfExists('restaurant_stocks');
     }
 };

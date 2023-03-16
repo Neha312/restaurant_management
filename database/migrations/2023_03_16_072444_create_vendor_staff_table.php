@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock_types', function (Blueprint $table) {
+        Schema::create('vendor_staff', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 30)->nullable();
+            $table->bigInteger('vendor_id')->unsigned()->nullable();
+            $table->string('first_name', 30)->nullable();
+            $table->string('last_name', 30)->nullable();
+            $table->string('phone', 10)->nullable();
             $table->timestamps();
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
+
+            $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
         });
     }
 
@@ -26,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_types');
+        Schema::dropIfExists('vendor_staff');
     }
 };

@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', '20');
-            $table->timestamps();
+        Schema::table('restaurants', function (Blueprint $table) {
+            $table->bigInteger('cousine_type_id')->unsigned()->nullable();
+            $table->foreign('cousine_type_id')->references('id')->on('cousine_types')->onDelete('cascade');
         });
     }
 
@@ -23,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::table('restaurants', function (Blueprint $table) {
+            //
+        });
     }
 };
