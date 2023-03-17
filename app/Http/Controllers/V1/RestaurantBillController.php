@@ -67,38 +67,12 @@ class RestaurantBillController extends Controller
             'total_amount'       => 'required|numeric',
             'due_date'           => 'required|date',
             'tax'                => 'required|numeric',
-            'status'             => 'required|in:PN,P',
         ]);
-
-        $bill = RestaurantBill::create($request->only('restaurant_id', 'vendor_id', 'stock_type_id', 'total_amount', 'tax', 'status', 'due_date'));
+        $total_amount = $request->total_amount + $request->tax;
+        $bill = RestaurantBill::create($request->only('restaurant_id', 'vendor_id', 'stock_type_id', 'tax', 'due_date') + ['total_amount' => $total_amount]);
 
         return ok('Restaurant bill created successfully!', $bill);
     }
-
-    /**
-     * API of Update Restaurant bill
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $id
-     */
-    public function update(Request $request, $id)
-    {
-        $this->validate($request, [
-            'restaurant_id'      => 'nullable|integer|exists:restaurants,id',
-            'vendor_id'          => 'nullable|integer|exists:vendors,id',
-            'stock_type_id'      => 'nullable|integer|exists:stock_types,id',
-            'total_amount'       => 'nullable|numeric',
-            'due_date'           => 'required|date',
-            'tax'                => 'required|numeric',
-            'status'             => 'required|in:PN,P',
-        ]);
-
-        $bill = RestaurantBill::findOrFail($id);
-        $bill->update($request->only('restaurant_id', 'vendor_id', 'stock_type_id', 'total_amount', 'tax', 'status', 'due_date'));
-
-        return ok('Restaurant bill updated successfully!', $bill);
-    }
-
     /**
      * API of get perticuler Restaurant bill details
      *
@@ -112,16 +86,43 @@ class RestaurantBillController extends Controller
         return ok('Restaurant bill retrieved successfully', $bill);
     }
 
+
+    /**
+     * API of Update Restaurant bill
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     */
+    // public function update(Request $request, $id)
+    // {
+    //     $this->validate($request, [
+    //         'restaurant_id'      => 'nullable|integer|exists:restaurants,id',
+    //         'vendor_id'          => 'nullable|integer|exists:vendors,id',
+    //         'stock_type_id'      => 'nullable|integer|exists:stock_types,id',
+    //         'total_amount'       => 'nullable|numeric',
+    //         'due_date'           => 'required|date',
+    //         'tax'                => 'required|numeric',
+    //         'status'             => 'required|in:PN,P',
+    //     ]);
+
+    //     $bill = RestaurantBill::findOrFail($id);
+    //     $bill->update($request->only('restaurant_id', 'vendor_id', 'stock_type_id', 'total_amount', 'tax', 'status', 'due_date'));
+
+    //     return ok('Restaurant bill updated successfully!', $bill);
+    // }
+
+
     /**
      * API of Delete restaurant bill
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
      */
-    public function delete($id)
-    {
-        RestaurantBill::findOrFail($id)->delete();
+    // public function delete($id)
+    // {
+    //     RestaurantBill::findOrFail($id)->delete();
 
-        return ok('Restaurant bill deleted successfully');
-    }
+    //     return ok('Restaurant bill deleted successfully');
+    // }
+
 }

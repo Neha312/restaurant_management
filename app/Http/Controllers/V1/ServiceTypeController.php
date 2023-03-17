@@ -78,7 +78,7 @@ class ServiceTypeController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name'           => 'nullable|string|max:30',
+            'name'   => 'nullable|string|max:30',
         ]);
 
         $service = ServiceType::findOrFail($id);

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Picture extends Model
 {
     protected $fillable = [
         'id',
-        'name',
+        'restaurant_picture_id',
+        'picture',
+        'type'
     ];
 }

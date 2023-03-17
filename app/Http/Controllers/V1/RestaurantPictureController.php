@@ -64,21 +64,25 @@ class RestaurantPictureController extends Controller
         $this->validate($request, [
             'restaurant_id'      => 'required|integer|exists:restaurants,id',
             'type'               => 'nullable|in:M,O',
-            // 'pictures.*'         => 'required|array',
-            'picture.*' => 'required|mimes:jpg,jpeg,png,bmp,tiff'
+            'picture.*'          => 'required|mimes:jpg,jpeg,png,bmp,tiff',
         ]);
+        $picture = RestaurantPicture::create($request->only('restaurant_id'));
 
-        $images = array();
-        if ($files = $request->file('picture')) {
-            foreach ($files as $file) {
-                $name = str_replace(".", " ", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
-                $file->storeAs("public/pictures", $name);
-                $images[] = $name;
+        $image = array();
+        if ($request->hasFile('picture')) {
+            foreach ($request->picture as $file) {
+                $image_name =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
+                $upload_path =  'images/' . $picture->id;
+                $file->storeAs($upload_path, $image_name);
+                $image[] = [
+                    'restaurant_picture_id' => $picture->id,
+                    'picture' => $image_name,
+                    'type' => $request->type
+                ];
             }
         }
-        $picture = RestaurantPicture::create($request->only('restaurant_id', 'type') + ['picture' =>  implode("|", $images)]);
-
-        return ok('Restaurant picture created successfully!', $picture);
+        $picture->images()->createMany($image);
+        return ok('Restaurant picture created successfully!', $picture->load('images'));
     }
 
     /**
@@ -96,18 +100,26 @@ class RestaurantPictureController extends Controller
         ]);
 
         $picture = RestaurantPicture::findOrFail($id);
-        $images = array();
-        if ($files = $request->file('picture')) {
-            Storage::deleteDirectory("public/pictures");
-            foreach ($files as $file) {
-                $name = str_replace(".", " ", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
-                $file->storeAs("public/pictures", $name);
-                $images[] = $name;
+        $picture->update($request->only('restaurant_id'));
+
+        $image = array();
+        if ($request->hasFile('picture')) {
+            $upload_path =  'images/' . $picture->id;
+            Storage::deleteDirectory($upload_path);
+            $picture->images()->delete();
+            foreach ($request->picture as $file) {
+                $image_name =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
+                $upload_path =  'images/' . $picture->id;
+                $file->storeAs($upload_path, $image_name);
+                $image[] = [
+                    'restaurant_picture_id' => $picture->id,
+                    'picture' => $image_name,
+                    'type' => $request->type
+                ];
             }
         }
-        $picture->update($request->only('restaurant_id', 'type') + ['picture' =>  implode("|", $images)]);
-
-        return ok('Restaurant picture updated successfully!', $picture);
+        $picture->images()->createMany($image);
+        return ok('Restaurant picture updated successfully!', $picture->load('images'));
     }
 
     /**
@@ -118,7 +130,7 @@ class RestaurantPictureController extends Controller
      */
     public function get($id)
     {
-        $picture = RestaurantPicture::with(['restaurants'])->findOrFail($id);
+        $picture = RestaurantPicture::with(['restaurants', 'images'])->findOrFail($id);
 
         return ok('Restaurant picture retrieved successfully', $picture);
     }
@@ -131,8 +143,9 @@ class RestaurantPictureController extends Controller
      */
     public function delete($id)
     {
-        RestaurantPicture::findOrFail($id)->delete();
-
+        $picture = RestaurantPicture::findOrFail($id);
+        $picture->images()->delete();
+        $picture->delete();
         return ok('Restaurant picture  deleted successfully');
     }
 }

@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('restaurant_bills', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('restaurant_id')->unsigned()->nullable();
             $table->bigInteger('vendor_id')->unsigned()->nullable();
-            $table->bigInteger('stock_type_id')->unsigned()->nullable();
-            $table->string('total_amount', 10)->nullable();
-            $table->string('tax', 10)->nullable();
-            $table->date('due_date');
+            $table->bigInteger('service_type_id')->unsigned()->nullable();
+            $table->string('name', 50)->nullable();
+            $table->string('quantity', 10)->nullable();
             $table->timestamps();
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
 
             $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
-            $table->foreign('stock_type_id')->references('id')->on('stock_types')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
+            $table->foreign('service_type_id')->references('id')->on('service_types')->onDelete('cascade');
         });
     }
 
@@ -35,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('restaurant_bills');
+        Schema::dropIfExists('orders');
     }
 };

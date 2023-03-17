@@ -13,29 +13,20 @@ class RestaurantBill extends BaseModel
         'stock_type_id',
         'total_amount',
         'tax',
-        'status',
         'due_date'
     ];
-    /* Accessors */
-    public function getApprovalStatusNameAttribute()
-    {
-        switch ($this->status) {
-            case 'PN':
-                return 'Pending';
-            case 'P':
-                return 'Paid';
-            default:
-                return $this->status;
-        }
-    }
+
+    /* Restaurant bill belong to restaurants Relationship */
     public function restaurants()
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
+    /* Restaurant bill belong to stocks Relationship */
     public function stocks()
     {
         return $this->belongsTo(StockType::class, 'stock_type_id');
     }
+    /* Restaurant belongs to vendor Relationship */
     public function vendors()
     {
         return $this->belongsTo(Vendor::class, 'vendor_id');

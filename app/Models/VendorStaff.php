@@ -14,7 +14,7 @@ class VendorStaff extends BaseModel
         'last_name',
         'phone'
     ];
-
+    /* Vendor staff belongs to vendors Relationship */
     public function vendors()
     {
         return $this->belongsTo(Vendor::class, 'vendor_id');

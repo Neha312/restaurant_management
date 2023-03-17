@@ -8,7 +8,6 @@ class Restaurant extends BaseModel
 {
     protected $fillable = [
         'id',
-        'user_id',
         'cousine_type_id',
         'name',
         'address1',
@@ -17,14 +16,14 @@ class Restaurant extends BaseModel
         'zip_code',
         'phone'
     ];
-
+    /* Restaurant belong to many users Relationship  */
     public function users()
     {
         return $this->belongsToMany(User::class, 'restaurant_users', 'restaurant_id', 'user_id');
     }
-
+    /* Restaurant belong to cousines Relationship */
     public function cousines()
     {
-        return $this->belongsTo(CousineType::class, 'cuisine_type_id');
+        return $this->belongsTo(CousineType::class, 'cousine_type_id');
     }
 }

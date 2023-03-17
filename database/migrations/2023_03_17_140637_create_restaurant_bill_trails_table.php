@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('restaurants', function (Blueprint $table) {
+        Schema::create('restaurant_bill_trails', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50)->nullable();
-            $table->string('profile_picture')->nullable();
-            $table->string('address1', 50)->nullable();
-            $table->string('address2', 50)->nullable();
-            $table->string('zip_code', 6)->nullable();
-            $table->string('phone', 10)->nullable();
+            $table->bigInteger('restaurant_bill_id')->unsigned()->nullable();
+            $table->enum('status', ['PN', 'P'])->comment('PN: Pending,P: Paid')->default('PN');
             $table->timestamps();
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
+
+            $table->foreign('restaurant_bill_id')->references('id')->on('restaurant_bills')->onDelete('cascade');
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('restaurants');
+        Schema::dropIfExists('restaurant_bill_trails');
     }
 };

@@ -148,7 +148,7 @@ class UserController extends Controller
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
-            'role'     => 'required|in:Admin,Owner,Manager'
+            'role'     => 'required|in:Admin,Owner,Manager,Vendor'
         ]);
 
         $user = User::where('email', $request->email)->first();

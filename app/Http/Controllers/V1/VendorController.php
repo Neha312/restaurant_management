@@ -121,15 +121,22 @@ class VendorController extends Controller
 
         return ok('Vendor deleted successfully');
     }
+    /**
+     * API of Vendor status
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     * @return $vendor
+     */
     public function status($id, Request $request)
     {
         $this->validate($request, [
-            'status'   => 'required|in:Active,Inactive',
+            'status'   => 'required|in:A,In',
         ]);
 
         $vendor = Vendor::findOrFail($id);
         $vendor->update($request->only('status'));
 
-        return ok('Vendor status updated Successfully');
+        return ok('Vendor status updated Successfully', $vendor);
     }
 }

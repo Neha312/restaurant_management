@@ -33,20 +33,23 @@ class User extends Authenticatable
         'created_by',
         'updated_by'
     ];
+    /* User belongs to roles Relationship */
     public function roles()
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
+    /* User belongs to many restaurants Relationship */
     public function restaurants()
     {
-        return $this->belongsToMany(Rastaurant::class, 'restaurant_users', 'user_id', 'restaurant_id',);
+        return $this->belongsToMany(Restaurant::class, 'restaurant_users', 'user_id', 'restaurant_id');
     }
+    /* boot method */
     public static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = auth()->user() ? auth()->user()->id : User::where('role_id', 1)->first()->id;
+            $model->created_by = auth()->user() ? auth()->user()->id : User::where('role_id', 1)->first()->id ?? null;
         });
         static::updating(function ($model) {
             $model->updated_by = auth()->user() ? auth()->user()->id : User::where('role_id', 1)->first()->id;

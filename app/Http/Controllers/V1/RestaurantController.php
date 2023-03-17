@@ -61,7 +61,7 @@ class RestaurantController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'user_id'             => 'required|integer|exists:users,id',
+            'user_id.*'           => 'required|integer|exists:users,id',
             'cousine_type_id'     => 'required|integer|exists:cousine_types,id',
             'name'                => 'required|string|max:30',
             'address1'            => 'required|string|max:50',
@@ -74,10 +74,10 @@ class RestaurantController extends Controller
         $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->profile_picture->getClientOriginalExtension();
         $request->profile_picture->storeAs("public/pictures", $imageName);
 
-        $restaurant = Restaurant::create($request->only('user_id', 'cousine_type_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
-        $restaurant->users()->sync($request->user_id);
+        $restaurant = Restaurant::create($request->only('cousine_type_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
+        $restaurant->users()->syncWithoutDetaching($request->user_id);
 
-        return ok('Restaurant created successfully!',  $restaurant);
+        return ok('Restaurant created successfully!',  $restaurant->load('users'));
     }
 
     /**
@@ -89,7 +89,7 @@ class RestaurantController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'user_id'             => 'nullable|integer|exists:users,id',
+            'user_id.*'           => 'nullable|integer|exists:users,id',
             'cousine_type_id'     => 'nullable|integer|exists:cousine_types,id',
             'name'                => 'nullable|string|max:30',
             'address1'            => 'nullable|string|max:50',
@@ -104,10 +104,10 @@ class RestaurantController extends Controller
         $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->profile_picture->getClientOriginalExtension();
         $request->profile_picture->storeAs("public/pictures", $imageName);
 
-        $restaurant->update($request->only('user_id', 'cousine_type_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
+        $restaurant->update($request->only('cousine_type_id', 'name', 'address1', 'address2', 'phone', 'zip_code') + ['profile_picture' => $imageName]);
         $restaurant->users()->sync($request->user_id);
 
-        return ok('Restaurant updated successfully!',  $restaurant);
+        return ok('Restaurant updated successfully!',  $restaurant->load('users'));
     }
 
     /**
@@ -131,8 +131,11 @@ class RestaurantController extends Controller
      */
     public function delete($id)
     {
-        Restaurant::findOrFail($id)->delete();
-
+        $restaurant = Restaurant::findOrFail($id);
+        if ($restaurant->users()->count() > 0) {
+            $restaurant->users()->detach();
+        }
+        $restaurant->delete();
         return ok('Restaurant deleted successfully');
     }
 }
