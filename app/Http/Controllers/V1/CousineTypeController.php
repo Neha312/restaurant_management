@@ -61,7 +61,7 @@ class CousineTypeController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'name'  => 'required|string|max:30',
+            'name'  => 'required|alpha|max:30',
         ]);
 
         $cousine = CousineType::create($request->only('name'));
@@ -78,7 +78,7 @@ class CousineTypeController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name'    => 'nullable|string|max:30',
+            'name'    => 'required|alpha|max:30',
         ]);
 
         $cousine = CousineType::findOrFail($id);

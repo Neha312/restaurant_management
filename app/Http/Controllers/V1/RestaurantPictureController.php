@@ -96,7 +96,7 @@ class RestaurantPictureController extends Controller
         $this->validate($request, [
             'restaurant_id'      => 'nullable|integer|exists:restaurants,id',
             'type'               => 'nullable|in:M,O',
-            'picture.*'          => 'nullable|mimes:jpg,jpeg,png,bmp,tiff'
+            'picture.*'          => 'required|mimes:jpg,jpeg,png,bmp,tiff'
         ]);
 
         $picture = RestaurantPicture::findOrFail($id);

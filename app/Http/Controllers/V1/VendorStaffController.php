@@ -62,9 +62,9 @@ class VendorStaffController extends Controller
     {
         $this->validate($request, [
             'vendor_id'          => 'required|integer|exists:vendors,id',
-            'first_name'         => 'required|string|max:30',
-            'last_name'          => 'required|string|max:30',
-            'phone'              => 'nullable|integer',
+            'first_name'         => 'required|alpha|max:20',
+            'last_name'          => 'required|alpha|max:20',
+            'phone'              => 'nullable|integer|min:10',
         ]);
 
         $vendor_staff = VendorStaff::create($request->only('vendor_id', 'first_name', 'last_name', 'phone'));
@@ -82,9 +82,9 @@ class VendorStaffController extends Controller
     {
         $this->validate($request, [
             'vendor_id'          => 'nullable|integer|exists:vendors,id',
-            'first_name'         => 'required|string|max:30',
-            'last_name'          => 'nullable|string|max:30',
-            'phone'              => 'nullable|integer',
+            'first_name'         => 'required|alpha|max:20',
+            'last_name'          => 'required|alpha|max:20',
+            'phone'              => 'nullable|integer|min:10',
         ]);
 
         $vendor_staff = VendorStaff::findOrFail($id);
