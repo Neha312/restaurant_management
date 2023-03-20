@@ -22,3 +22,5 @@ https://web.postman.co/documentation/25052647-140c6121-e660-417f-823a-a4e485e005
 8.Restaurant Picture CRUD API
 9.Restaurant Bill CRUD API
 10.Cousine Type CRUD API
+11.Order CRUD API
+12.Restaurant bill trail CRUD API
