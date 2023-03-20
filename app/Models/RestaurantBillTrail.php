@@ -12,7 +12,7 @@ class RestaurantBillTrail extends BaseModel
         'status',
     ];
     /* Accessors */
-    public function getApprovalStatusNameAttribute()
+    public function getStatusNameAttribute()
     {
         switch ($this->status) {
             case 'PN':

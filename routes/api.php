@@ -13,7 +13,6 @@ use App\Http\Controllers\V1\VendorStaffController;
 use App\Http\Controllers\V1\RestaurantBillController;
 use App\Http\Controllers\V1\RestaurantStockController;
 use App\Http\Controllers\V1\RestaurantPictureController;
-use App\Http\Controllers\V1\RestaurantBillTrailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +25,7 @@ use App\Http\Controllers\V1\RestaurantBillTrailController;
 |
 */
 
-Route::prefix('V1')->group(function () {
+Route::prefix('v1')->group(function () {
     Route::post('login', [UserController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('logout', [UserController::class, 'logout']);
@@ -93,6 +92,7 @@ Route::prefix('V1')->group(function () {
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
             Route::post('update/{id}', 'update')->middleware('check:Admin|Vendor');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Vendor');
+            Route::post('status', 'status')->middleware('check:Admin|Vendor');
         });
         Route::controller(CousineTypeController::class)->prefix('cousine')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
@@ -102,19 +102,11 @@ Route::prefix('V1')->group(function () {
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
         });
         Route::controller(OrderController::class)->prefix('order')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
             Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
             Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
-        });
-        Route::controller(RestaurantBillTrailController::class)->prefix('trail')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Vendor');
-            Route::post('create', 'create')->middleware('check:Admin|Vendor');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Vendor');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Vendor');
-            Route::post('status/{id}', 'status')->middleware('check:Admin|Vendor');
         });
     });
 });

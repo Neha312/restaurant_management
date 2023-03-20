@@ -63,12 +63,12 @@ class RestaurantController extends Controller
         $this->validate($request, [
             'user_id.*'           => 'required|integer|exists:users,id',
             'cousine_type_id'     => 'required|integer|exists:cousine_types,id',
-            'name'                => 'required|string|max:30',
+            'name'                => 'required|alpha|max:20',
             'address1'            => 'required|string|max:50',
             'address2'            => 'nullable|string|max:50',
             'zip_code'            => 'required|integer|min:6',
-            'phone'               => 'nullable|integer|min:10',
-            'profile_picture'     => 'nullable|mimes:jpg,jpeg,png,bmp,tiff'
+            'phone'               => 'required|integer|min:10',
+            'profile_picture'     => 'required|mimes:jpg,jpeg,png,bmp,tiff'
         ]);
 
         $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->profile_picture->getClientOriginalExtension();
@@ -91,7 +91,7 @@ class RestaurantController extends Controller
         $this->validate($request, [
             'user_id.*'           => 'nullable|integer|exists:users,id',
             'cousine_type_id'     => 'nullable|integer|exists:cousine_types,id',
-            'name'                => 'nullable|string|max:30',
+            'name'                => 'required|alpha|max:20',
             'address1'            => 'nullable|string|max:50',
             'address2'            => 'nullable|string|max:50',
             'zip_code'            => 'nullable|integer|min:6',

@@ -15,7 +15,7 @@ class RestaurantStock extends BaseModel
         'minimum_quantity'
     ];
     /* Accessors */
-    public function getApprovalStatusNameAttribute()
+    public function getTypeNameAttribute()
     {
         switch ($this->type) {
             case 'M':

@@ -62,7 +62,7 @@ class VendorController extends Controller
     {
         $this->validate($request, [
             'service_type_id'     => 'required|integer|exists:service_types,id',
-            'legal_name'          => 'required|string|max:30',
+            'legal_name'          => 'required|alpha|max:20',
             'address1'            => 'required|string|max:50',
             'address2'            => 'nullable|string|max:50',
             'phone'               => 'nullable|integer|min:10',
@@ -83,11 +83,13 @@ class VendorController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'service_type_id'     => 'required|integer|exists:service_types,id',
-            'legal_name'          => 'required|string|max:30',
+            'service_type_id'     => 'nullable|integer|exists:service_types,id',
+            'legal_name'          => 'required|alpha|max:20',
             'address1'            => 'required|string|max:50',
             'address2'            => 'nullable|string|max:50',
             'phone'               => 'nullable|integer',
+            'zip_code'            => 'nullable|integer|min:6',
+
         ]);
 
         $vendor = Vendor::findOrFail($id);
