@@ -1,5 +1,14 @@
-#Restaurant Management
+# Restaurant Management
+
 composer create-project laravel/laravel restaurant-management
+
+# Run Project command
+
+php artisan serve
+
+# migration command
+
+php artisan migrate
 
 # Seeder of Role & User(admin seeder)
 
