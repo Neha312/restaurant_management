@@ -12,7 +12,7 @@ class RestaurantController extends Controller
      * API of List Restaurant
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return  $restaurant
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class RestaurantController extends Controller
         $restaurant = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  =>  $restaurant
+            'count'       => $count,
+            'restaurant'  => $restaurant
         ];
 
         return ok('Restaurant list', $data);

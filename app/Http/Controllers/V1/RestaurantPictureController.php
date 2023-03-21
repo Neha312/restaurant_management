@@ -13,7 +13,7 @@ class RestaurantPictureController extends Controller
      * API of List Restaurant picture
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $picture
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -46,8 +46,8 @@ class RestaurantPictureController extends Controller
         $picture = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $picture
+            'count'    => $count,
+            'picture'  => $picture
         ];
 
         return ok('Restaurant picture list', $data);

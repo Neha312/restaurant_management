@@ -23,4 +23,3 @@ https://documenter.getpostman.com/view/25052647/2s93K1qKo2
 9.Restaurant Bill CRUD API
 10.Cousine Type CRUD API
 11.Order CRUD API
-12.Restaurant bill trail CRUD API

@@ -12,7 +12,7 @@ class VendorStaffController extends Controller
      * API of List Vendor staff
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $vendor_staff
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class VendorStaffController extends Controller
         $vendor_staff = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $vendor_staff
+            'count'         => $count,
+            'vendor_staff'  => $vendor_staff
         ];
 
         return ok('Vendor staff list', $data);

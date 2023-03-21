@@ -13,7 +13,7 @@ class RestaurantBillController extends Controller
      * API of List Restaurant bill
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $bill
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -47,7 +47,7 @@ class RestaurantBillController extends Controller
 
         $data = [
             'count' => $count,
-            'data'  => $bill
+            'bill'  => $bill
         ];
 
         return ok('Restaurant bill list', $data);

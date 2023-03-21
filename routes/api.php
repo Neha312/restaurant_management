@@ -30,11 +30,11 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('logout', [UserController::class, 'logout']);
         Route::controller(ServiceTypeController::class)->prefix('service')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Owner');
-            Route::post('create', 'create')->middleware('check:Admin|Owner');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner');
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
+            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
+            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
+            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
         });
         Route::controller(StockTypeController::class)->prefix('stock_type')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');

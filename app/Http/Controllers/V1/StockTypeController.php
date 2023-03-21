@@ -12,7 +12,7 @@ class StockTypeController extends Controller
      * API of List Stock type
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $stock
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class StockTypeController extends Controller
         $stock = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $stock
+            'count'  => $count,
+            'stock'  => $stock
         ];
 
         return ok('Stock type list', $data);

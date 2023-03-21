@@ -12,7 +12,7 @@ class ServiceTypeController extends Controller
      * API of List Service type
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $service
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class ServiceTypeController extends Controller
         $service = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $service
+            'count'    => $count,
+            'service'  => $service
         ];
 
         return ok('Service type list', $data);
