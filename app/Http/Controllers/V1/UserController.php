@@ -62,23 +62,22 @@ class UserController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'role_id'             => 'required|integer|exists:roles,id',
-            'first_name'          => 'required|alpha|max:20',
-            'last_name'           => 'required|alpha|max:20',
-            'email'               => 'required|email|unique:users,email',
-            'joining_date'        => 'required|date',
-            'ending_date'         => 'nullable|date|after:joining_date',
-            'password'            => 'required|string|max:8',
-            'address1'            => 'required|string|max:50',
-            'address2'            => 'nullable|string|max:50',
-            'zip_code'            => 'required|integer|min:6',
-            'phone'               => 'nullable|integer|min:10',
-            'total_leave'         => 'required|numeric',
-            'used_leave'          => 'nullable|numeric',
+            'role_id'                   => 'required|integer|exists:roles,id',
+            'first_name'                => 'required|alpha|max:20',
+            'last_name'                 => 'required|alpha|max:20',
+            'email'                     => 'required|email|unique:users,email',
+            'joining_date'              => 'required|date',
+            'ending_date'               => 'nullable|date|after:joining_date',
+            'password'                  => 'required|string|max:8',
+            'address1'                  => 'required|string|max:50',
+            'address2'                  => 'nullable|string|max:50',
+            'zip_code'                  => 'required|integer|min:6',
+            'phone'                     => 'nullable|integer|min:10',
+            'total_leave'               => 'required|numeric',
+            'used_leave'                => 'nullable|numeric',
         ]);
 
         $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
-
         return ok('User created successfully!', $user);
     }
 
@@ -92,19 +91,21 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'role_id'             => 'nullable|integer|exists:roles,id',
-            'first_name'          => 'required|alpha|max:20',
-            'last_name'           => 'required|alpha|max:20',
-            'email'               => 'nullable|email|unique:users,email',
-            'joining_date'        => 'nullable|date',
-            'ending_date'         => 'nullable|date|after:joining_date',
-            'password'            => 'nullable|max:8',
-            'address1'            => 'nullable|string|max:50',
-            'address2'            => 'nullable|string|max:50',
-            'zip_code'            => 'nullable|integer|min:6',
-            'phone'               => 'nullable|integer|min:10',
-            'total_leave'         => 'nullable|numeric',
-            'used_leave'          => 'nullable|numeric',
+            'role_id'                   => 'nullable|integer|exists:roles,id',
+            'first_name'                => 'required|alpha|max:20',
+            'last_name'                 => 'required|alpha|max:20',
+            'email'                     => 'nullable|email|unique:users,email',
+            'joining_date'              => 'nullable|date',
+            'ending_date'               => 'nullable|date|after:joining_date',
+            'password'                  => 'nullable|max:8',
+            'address1'                  => 'nullable|string|max:50',
+            'address2'                  => 'nullable|string|max:50',
+            'zip_code'                  => 'nullable|integer|min:6',
+            'phone'                     => 'nullable|integer|min:10',
+            'total_leave'               => 'nullable|numeric',
+            'used_leave'                => 'nullable|numeric',
+            'restaurants.*'             => 'required|array',
+
         ]);
 
         $user = User::findOrFail($id);

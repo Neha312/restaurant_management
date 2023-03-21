@@ -38,8 +38,13 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
-    /* User belongs to many restaurants Relationship */
+    /* User belongs to roles Relationship */
     public function restaurants()
+    {
+        return $this->hasMany(Restaurant::class, 'user_id');
+    }
+    /* User belongs to many restaurants Relationship */
+    public function restaurantUsers()
     {
         return $this->belongsToMany(Restaurant::class, 'restaurant_users', 'user_id', 'restaurant_id');
     }

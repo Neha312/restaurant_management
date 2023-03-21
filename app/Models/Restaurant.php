@@ -12,7 +12,7 @@ class Restaurant extends BaseModel
         'name',
         'address1',
         'address2',
-        'profile_picture',
+        'logo',
         'zip_code',
         'phone'
     ];

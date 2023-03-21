@@ -61,7 +61,7 @@ class RestaurantController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'user_id.*'           => 'required|integer|exists:users,id',
+            'user_id'             => 'required|integer|exists:users,id',
             'cousine_type_id'     => 'required|integer|exists:cousine_types,id',
             'name'                => 'required|alpha|max:20',
             'address1'            => 'required|string|max:50',
@@ -90,7 +90,7 @@ class RestaurantController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'user_id.*'           => 'nullable|integer|exists:users,id',
+            'user_id'             => 'nullable|integer|exists:users,id',
             'cousine_type_id'     => 'nullable|integer|exists:cousine_types,id',
             'name'                => 'required|alpha|max:20',
             'address1'            => 'nullable|string|max:50',
