@@ -11,6 +11,7 @@ class CousineType extends BaseModel
         'id',
         'name',
     ];
+    /* Cousine has many restaurants Relationship */
     public function restaurants()
     {
         return $this->hasMany(Restaurant::class, 'cousine_type_id');

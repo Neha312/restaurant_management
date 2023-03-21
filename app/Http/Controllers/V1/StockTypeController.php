@@ -56,7 +56,7 @@ class StockTypeController extends Controller
      * API of Create Stock type
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $stock
+     *@return json $stock
      */
     public function create(Request $request)
     {
@@ -91,7 +91,7 @@ class StockTypeController extends Controller
      * API of get perticuler Stock type details
      *
      * @param  $id
-     * @return $stock
+     * @return json $stock
      */
     public function get($id)
     {

@@ -56,7 +56,7 @@ class VendorController extends Controller
      * API of Create Vendor
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $vendor
+     *@return json $vendor
      */
     public function create(Request $request)
     {
@@ -79,6 +79,7 @@ class VendorController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $vendor
      */
     public function update(Request $request, $id)
     {
@@ -102,7 +103,7 @@ class VendorController extends Controller
      * API of get perticuler Vendor details
      *
      * @param  $id
-     * @return $vendor
+     * @return json $vendor
      */
     public function get($id)
     {
@@ -128,7 +129,7 @@ class VendorController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
-     * @return $vendor
+     * @return json $vendor
      */
     public function status($id, Request $request)
     {

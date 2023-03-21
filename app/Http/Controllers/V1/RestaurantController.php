@@ -56,7 +56,7 @@ class RestaurantController extends Controller
      * API of Create Restaurant
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $user
+     *@return json $user
      */
     public function create(Request $request)
     {
@@ -85,6 +85,7 @@ class RestaurantController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $restaurant
      */
     public function update(Request $request, $id)
     {
@@ -114,7 +115,7 @@ class RestaurantController extends Controller
      * API of get perticuler restaurant details
      *
      * @param  $id
-     * @return  $restaurant
+     * @return  json $restaurant
      */
     public function get($id)
     {

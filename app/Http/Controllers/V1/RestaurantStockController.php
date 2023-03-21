@@ -56,7 +56,7 @@ class RestaurantStockController extends Controller
      * API of Create Restaurant stock
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $stock
+     *@return json $stock
      */
     public function create(Request $request)
     {
@@ -78,6 +78,7 @@ class RestaurantStockController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $stock
      */
     public function update(Request $request, $id)
     {
@@ -99,7 +100,7 @@ class RestaurantStockController extends Controller
      * API of get perticuler Restaurant stock details
      *
      * @param  $id
-     * @return $stock
+     * @return json $stock
      */
     public function get($id)
     {

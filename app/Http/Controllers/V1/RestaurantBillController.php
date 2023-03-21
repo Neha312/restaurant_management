@@ -57,7 +57,7 @@ class RestaurantBillController extends Controller
      * API of Create Restaurant bill
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $bill
+     *@return json $bill
      */
     public function create(Request $request)
     {
@@ -81,7 +81,7 @@ class RestaurantBillController extends Controller
      * API of get perticuler Restaurant bill details
      *
      * @param  $id
-     * @return $bill
+     * @return json $bill
      */
     public function get($id)
     {
@@ -94,7 +94,7 @@ class RestaurantBillController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $request
-     * @return $bill
+     * @return json $bill
      */
     public function status(Request $request)
     {

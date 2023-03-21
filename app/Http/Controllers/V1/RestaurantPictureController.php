@@ -57,7 +57,7 @@ class RestaurantPictureController extends Controller
      * API of Create Restaurant picture
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $picture
+     *@return json $picture
      */
     public function create(Request $request)
     {
@@ -90,6 +90,7 @@ class RestaurantPictureController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $picture
      */
     public function update(Request $request, $id)
     {
@@ -126,7 +127,7 @@ class RestaurantPictureController extends Controller
      * API of get perticuler Restaurant picture details
      *
      * @param  $id
-     * @return $picture
+     * @return json $picture
      */
     public function get($id)
     {
