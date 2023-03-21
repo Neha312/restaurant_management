@@ -31,7 +31,7 @@ class RestaurantStock extends BaseModel
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
-    /* Restaurant stock belongs to stock Relationship */
+    /* Restaurant stock belongs to stock type Relationship */
     public function stocks()
     {
         return $this->belongsTo(StockType::class, 'stock_type_id');

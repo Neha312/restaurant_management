@@ -56,7 +56,7 @@ class CousineTypeController extends Controller
      * API of Create Cousine type
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $cousine
+     *@return json $cousine
      */
     public function create(Request $request)
     {
@@ -91,7 +91,7 @@ class CousineTypeController extends Controller
      * API of get perticuler Cousine type details
      *
      * @param  $id
-     * @return $cousine
+     * @return json $cousine
      */
     public function get($id)
     {

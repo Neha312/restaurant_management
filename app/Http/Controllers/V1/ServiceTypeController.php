@@ -56,7 +56,7 @@ class ServiceTypeController extends Controller
      * API of Create Service type
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $service
+     *@return json $service
      */
     public function create(Request $request)
     {
@@ -74,6 +74,7 @@ class ServiceTypeController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $service
      */
     public function update(Request $request, $id)
     {
@@ -91,7 +92,7 @@ class ServiceTypeController extends Controller
      * API of get perticuler Service type details
      *
      * @param  $id
-     * @return $service
+     * @return json $service
      */
     public function get($id)
     {

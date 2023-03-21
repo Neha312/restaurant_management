@@ -19,7 +19,7 @@ class Order extends BaseModel
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
-    /* Order belong to stocks Relationship */
+    /* Order belong to service Relationship */
     public function services()
     {
         return $this->belongsTo(ServiceType::class, 'service_type_id');

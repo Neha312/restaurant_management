@@ -57,7 +57,7 @@ class VendorStaffController extends Controller
      * API of Create Vendor staff
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $vendor
+     *@return json $vendor_staff
      */
     public function create(Request $request)
     {
@@ -78,6 +78,7 @@ class VendorStaffController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $vendor_staff
      */
     public function update(Request $request, $id)
     {
@@ -98,7 +99,7 @@ class VendorStaffController extends Controller
      * API of get perticuler Vendor staff details
      *
      * @param  $id
-     * @return $vendor_staff
+     * @return json $vendor_staff
      */
     public function get($id)
     {

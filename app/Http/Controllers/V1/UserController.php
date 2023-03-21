@@ -57,7 +57,7 @@ class UserController extends Controller
      * API of Create User
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $user
+     *@return json $user
      */
     public function create(Request $request)
     {
@@ -87,6 +87,7 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $user
      */
     public function update(Request $request, $id)
     {
@@ -141,7 +142,7 @@ class UserController extends Controller
      * API of User login
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return $token
+     * @return json $data
      */
     public function login(Request $request)
     {

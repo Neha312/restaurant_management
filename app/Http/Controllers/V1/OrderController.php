@@ -56,7 +56,7 @@ class OrderController extends Controller
      * API of Create Order
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $order
+     *@return json $order
      */
     public function create(Request $request)
     {
@@ -76,7 +76,7 @@ class OrderController extends Controller
      * API of get perticuler Order
      *
      * @param  $id
-     * @return $order
+     * @return json $order
      */
     public function get($id)
     {
@@ -89,6 +89,7 @@ class OrderController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  $id
+     * @return json $order
      */
     public function update(Request $request, $id)
     {
