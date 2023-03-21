@@ -95,7 +95,7 @@ class CousineTypeController extends Controller
      */
     public function get($id)
     {
-        $cousine = CousineType::findOrFail($id);
+        $cousine = CousineType::with('restaurants')->findOrFail($id);
 
         return ok('Cousine type retrieved successfully', $cousine);
     }

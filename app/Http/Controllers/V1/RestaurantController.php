@@ -24,7 +24,7 @@ class RestaurantController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Restaurant::query();
+        $query = Restaurant::query()->with(['users', 'cousines', 'orders']);
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -118,7 +118,7 @@ class RestaurantController extends Controller
      */
     public function get($id)
     {
-        $restaurant = Restaurant::with(['users', 'cousines'])->findOrFail($id);
+        $restaurant = Restaurant::with(['users', 'cousines', 'orders'])->findOrFail($id);
 
         return ok('Restaurant retrieved successfully',  $restaurant);
     }

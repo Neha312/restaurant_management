@@ -14,12 +14,12 @@ class Order extends BaseModel
         'name',
         'quantity'
     ];
-    /* Order bill belong to restaurants Relationship */
+    /* Order belong to restaurants Relationship */
     public function restaurants()
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
-    /* Order bill belong to stocks Relationship */
+    /* Order belong to stocks Relationship */
     public function services()
     {
         return $this->belongsTo(ServiceType::class, 'service_type_id');

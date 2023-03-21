@@ -24,7 +24,7 @@ class VendorController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Vendor::query();
+        $query = Vendor::query()->with('staff');
 
         if ($request->search) {
             $query = $query->where('legal_name', 'like', "%$request->search%");
@@ -106,7 +106,7 @@ class VendorController extends Controller
      */
     public function get($id)
     {
-        $vendor = Vendor::with(['services'])->findOrFail($id);
+        $vendor = Vendor::with(['services', 'staff'])->findOrFail($id);
 
         return ok('Vendor retrieved successfully', $vendor);
     }

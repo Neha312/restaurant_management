@@ -25,7 +25,7 @@ class RestaurantBillController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = RestaurantBill::query();
+        $query = RestaurantBill::query()->with('trail');
 
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");

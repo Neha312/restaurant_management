@@ -33,4 +33,9 @@ class Vendor extends BaseModel
     {
         return $this->belongsTo(ServiceType::class, 'service_type_id');
     }
+    /* Vendor has many staff Relationship */
+    public function staff()
+    {
+        return $this->hasMany(VendorStaff::class, 'vendor_id');
+    }
 }

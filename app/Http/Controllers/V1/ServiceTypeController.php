@@ -24,7 +24,7 @@ class ServiceTypeController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = ServiceType::query();
+        $query = ServiceType::query()->with('vendors');
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -95,7 +95,7 @@ class ServiceTypeController extends Controller
      */
     public function get($id)
     {
-        $service = ServiceType::findOrFail($id);
+        $service = ServiceType::with('vendors')->findOrFail($id);
 
         return ok('Service type retrieved successfully', $service);
     }
