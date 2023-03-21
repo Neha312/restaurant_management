@@ -8,7 +8,7 @@ php artisan db:seed --class=UserSeeder
 
 # PostMan Collection link
 
-https://web.postman.co/documentation/25052647-140c6121-e660-417f-823a-a4e485e005d3/publish?workspaceId=7f981cec-11e3-4254-8c43-db4b231ad678
+https://documenter.getpostman.com/view/25052647/2s93K1qKo2
 
 # Develop Feature
 
