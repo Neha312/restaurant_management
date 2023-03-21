@@ -34,6 +34,6 @@ class RestaurantBill extends BaseModel
     /* Restaurant has one trail Relationship */
     public function trail()
     {
-        return $this->hasOne(RestaurantBillTrail::class, 'restaurant_bill_id');
+        return $this->hasMany(RestaurantBillTrail::class, 'restaurant_bill_id');
     }
 }

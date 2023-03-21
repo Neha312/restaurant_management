@@ -44,12 +44,12 @@ Route::prefix('v1')->group(function () {
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
         });
         Route::controller(VendorController::class)->prefix('vendor')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Owner');
-            Route::post('create', 'create')->middleware('check:Admin|Owner');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner');
-            Route::post('status/{id}', 'status')->middleware('check:Admin|Owner');
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
+            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
+            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
+            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
+            Route::post('status/{id}', 'status')->middleware('check:Admin|Owner|Manager');
         });
         Route::controller(UserController::class)->prefix('user')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
@@ -67,10 +67,10 @@ Route::prefix('v1')->group(function () {
         });
         Route::controller(VendorStaffController::class)->prefix('staff')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('create', 'create')->middleware('check:Admin|Vendor');
+            Route::post('create', 'create')->middleware('check:Vendor');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Vendor');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Vendor');
+            Route::post('update/{id}', 'update')->middleware('check:Vendor');
+            Route::post('delete/{id}', 'delete')->middleware('check:Vendor');
         });
         Route::controller(RestaurantPictureController::class)->prefix('picture')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
@@ -88,11 +88,9 @@ Route::prefix('v1')->group(function () {
         });
         Route::controller(RestaurantBillController::class)->prefix('bill')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Manager|Vendor');
-            Route::post('create', 'create')->middleware('check:Admin|Vendor');
+            Route::post('create', 'create')->middleware('check:Vendor');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Vendor');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Vendor');
-            Route::post('status', 'status')->middleware('check:Admin|Vendor');
+            Route::post('status', 'status')->middleware('check:Vendor');
         });
         Route::controller(CousineTypeController::class)->prefix('cousine')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');

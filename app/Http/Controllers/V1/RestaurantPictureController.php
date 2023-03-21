@@ -25,7 +25,7 @@ class RestaurantPictureController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = RestaurantPicture::query();
+        $query = RestaurantPicture::query()->with('images');
 
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");

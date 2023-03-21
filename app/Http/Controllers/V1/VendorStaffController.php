@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Vendor;
 use App\Models\VendorStaff;
 
 class VendorStaffController extends Controller
@@ -24,7 +25,7 @@ class VendorStaffController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = VendorStaff::query();
+        $query = VendorStaff::query()->with('vendors');
 
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");

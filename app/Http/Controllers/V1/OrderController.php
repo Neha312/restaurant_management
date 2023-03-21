@@ -24,7 +24,7 @@ class OrderController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Order::query();
+        $query = Order::query()->with('restaurants', 'vendors');
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");

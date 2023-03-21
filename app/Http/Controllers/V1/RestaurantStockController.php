@@ -24,7 +24,7 @@ class RestaurantStockController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = RestaurantStock::query();
+        $query = RestaurantStock::query()->with('restaurants');
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");

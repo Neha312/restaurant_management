@@ -26,4 +26,9 @@ class Restaurant extends BaseModel
     {
         return $this->belongsTo(CousineType::class, 'cousine_type_id');
     }
+    /*Restaurant has many orders Relationship */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'restaurant_id');
+    }
 }

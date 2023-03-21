@@ -25,7 +25,7 @@ class UserController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = User::query();
+        $query = User::query()->with('roles');
 
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
@@ -120,7 +120,7 @@ class UserController extends Controller
      */
     public function get($id)
     {
-        $user = User::with(['roles'])->findOrFail($id);
+        $user = User::with(['roles', 'restaurants'])->findOrFail($id);
 
         return ok('User retrieved successfully', $user);
     }

@@ -24,7 +24,7 @@ class StockTypeController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = StockType::query();
+        $query = StockType::query()->with('resStock');
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -95,7 +95,7 @@ class StockTypeController extends Controller
      */
     public function get($id)
     {
-        $stock = StockType::findOrFail($id);
+        $stock = StockType::with('resStock')->findOrFail($id);
 
         return ok('Stock type retrieved successfully', $stock);
     }

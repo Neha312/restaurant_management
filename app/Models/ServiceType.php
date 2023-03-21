@@ -10,4 +10,9 @@ class ServiceType extends BaseModel
         'id',
         'name',
     ];
+    /* Service has many vendors Relationship */
+    public function vendors()
+    {
+        return $this->hasMany(Vendor::class, 'service_type_id');
+    }
 }
