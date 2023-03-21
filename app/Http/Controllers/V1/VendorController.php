@@ -12,7 +12,7 @@ class VendorController extends Controller
      * API of List Vendor
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $vendor
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class VendorController extends Controller
         $vendor = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $vendor
+            'count'   => $count,
+            'vendor'  => $vendor
         ];
 
         return ok('Vendor list', $data);

@@ -12,7 +12,7 @@ class RestaurantStockController extends Controller
      * API of List Restaurant stock
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $stock
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class RestaurantStockController extends Controller
         $stock = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $stock
+            'count'  => $count,
+            'stock'  => $stock
         ];
 
         return ok('Restaurant Stock list', $data);

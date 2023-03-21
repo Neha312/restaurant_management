@@ -12,7 +12,7 @@ class CousineTypeController extends Controller
      * API of List Cousine type
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $cousine
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class CousineTypeController extends Controller
         $cousine = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $cousine
+            'count'    => $count,
+            'cousine'  => $cousine
         ];
 
         return ok('Cousine type list', $data);

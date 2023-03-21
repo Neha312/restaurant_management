@@ -13,7 +13,7 @@ class UserController extends Controller
      * API of List User
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $user
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -47,7 +47,7 @@ class UserController extends Controller
 
         $data = [
             'count' => $count,
-            'data'  => $user
+            'user'  => $user
         ];
 
         return ok('User list', $data);
@@ -160,7 +160,7 @@ class UserController extends Controller
             return error("Role does not match!");
         }
         if (!Hash::check($request->password, $user->password)) {
-            return error("Incorrect!");
+            return error("Incorrect Password!");
         }
         $token = $user->createToken($request->email)->plainTextToken;
 

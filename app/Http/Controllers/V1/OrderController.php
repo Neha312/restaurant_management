@@ -12,7 +12,7 @@ class OrderController extends Controller
      * API of List Order
      *
      *@param  \Illuminate\Http\Request  $request
-     *@return $order
+     *@return json $data
      */
     public function list(Request $request)
     {
@@ -45,8 +45,8 @@ class OrderController extends Controller
         $order = $query->get();
 
         $data = [
-            'count' => $count,
-            'data'  => $order
+            'count'  => $count,
+            'order'  => $order
         ];
 
         return ok('Order list', $data);
@@ -65,7 +65,7 @@ class OrderController extends Controller
             'vendor_id'          => 'required|integer|exists:vendors,id',
             'service_type_id'    => 'required|integer|exists:service_types,id',
             'quantity'           => 'required|numeric',
-            'name'               => 'required|string|max:50',
+            'name'               => 'required|alpha|max:20',
 
         ]);
         $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'name', 'quantity'));
@@ -97,7 +97,7 @@ class OrderController extends Controller
             'vendor_id'          => 'nullable|integer|exists:vendors,id',
             'service_type_id'    => 'nullable|integer|exists:service_types,id',
             'quantity'           => 'required|numeric',
-            'name'               => 'required|string|max:50',
+            'name'               => 'required|alpha|max:20',
         ]);
 
         $order = Order::findOrFail($id);
