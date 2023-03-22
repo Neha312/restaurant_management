@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('service_type_id')->unsigned()->nullable();
             $table->string('name', 50)->nullable();
             $table->string('quantity', 10)->nullable();
+            $table->enum('status', ['P', 'DP', 'D'])->comment('P: Pending,DP:Dispatch,D:Delivered')->default('P');
             $table->timestamps();
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();

@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('restaurant_pictures', function (Blueprint $table) {
-            $table->id();
+        Schema::create('cousine_type_restaurants', function (Blueprint $table) {
+            $table->bigInteger('cousine_type_id')->unsigned()->nullable();
             $table->bigInteger('restaurant_id')->unsigned()->nullable();
-            $table->string('picture')->nullable();
-            $table->enum('type', ['M', 'O'])->comment('M: Menu,O: Other')->default('M');
-
+            $table->foreign('cousine_type_id')->references('id')->on('cousine_types')->onDelete('cascade');
             $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('restaurant_pictures');
+        Schema::dropIfExists('cousine_type_restaurants');
     }
 };

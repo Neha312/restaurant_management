@@ -14,18 +14,6 @@ class RestaurantStock extends BaseModel
         'available_quantity',
         'minimum_quantity'
     ];
-    /* Accessors */
-    public function getTypeNameAttribute()
-    {
-        switch ($this->type) {
-            case 'M':
-                return 'Menu';
-            case 'O':
-                return 'Other';
-            default:
-                return $this->type;
-        }
-    }
     /* Restaurant stock belongs to restaurant Relationship */
     public function restaurants()
     {

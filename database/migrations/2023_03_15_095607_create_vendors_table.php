@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('service_type_id')->unsigned()->nullable();
             $table->string('legal_name', 50)->nullable();
             $table->string('address1', 50)->nullable();
             $table->string('address2', 50)->nullable();
@@ -23,8 +22,6 @@ return new class extends Migration
             $table->char('created_by')->nullable();
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
-
-            $table->foreign('service_type_id')->references('id')->on('service_types')->onDelete('cascade');
         });
     }
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Restaurant;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -75,10 +77,24 @@ class UserController extends Controller
             'phone'                     => 'nullable|integer|min:10',
             'total_leave'               => 'required|numeric',
             'used_leave'                => 'nullable|numeric',
+            'restaurant_id'            => 'required_if:role_id,3,4,5,6|integer|exists:restaurants,id',
+
         ]);
 
-        $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
-        return ok('User created successfully!', $user);
+        if ($request->role_id != 1) {
+            if ($request->role_id == 2 || $request->role_id == 7) {
+                $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
+                return ok('User created successfully!');
+            } elseif ($request->role_id == 3 || $request->role_id == 4 || $request->role_id == 5 || $request->role_id == 5) {
+                $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
+                $user->restaurantUsers()->attach([$request->restaurant_id => ['is_owner' => false]]);
+                return ok('User created successfully!', $user->load('restaurantUsers'));
+            } else
+                return ok('User can not created!');
+        } else {
+
+            return 'Admin Cannot be created !';
+        }
     }
 
     /**
@@ -135,53 +151,11 @@ class UserController extends Controller
      */
     public function delete($id)
     {
-        User::findOrFail($id)->delete();
-
+        $user = User::findOrFail($id);
+        if ($user->restaurantUsers()->count() > 0) {
+            $user->restaurantUsers()->detach();
+        }
+        $user->delete();
         return ok('User deleted successfully');
-    }
-    /**
-     * API of User login
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return json $data
-     */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-            'role'     => 'required|in:Admin,Owner,Manager,Vendor'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return error("User with this email is not found!");
-        }
-        if ($request->role != $user->roles->name) {
-
-            return error("Role does not match!");
-        }
-        if (!Hash::check($request->password, $user->password)) {
-            return error("Incorrect Password!");
-        }
-        $token = $user->createToken($request->email)->plainTextToken;
-
-        $data = [
-            'token' => $token,
-            'user'  => $user
-        ];
-        return ok('User Logged in Succesfully', $data);
-    }
-
-    /**
-     * API of User Logout
-     *
-     * @param  \Illuminate\Http\Request  $request
-     */
-    public function logout()
-    {
-        auth()->user()->currentAccessToken()->delete();
-
-        return ok("Logged out successfully!");
     }
 }

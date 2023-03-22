@@ -61,7 +61,7 @@ class VendorController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'service_type_id'     => 'required|integer|exists:service_types,id',
+            'service_type_id.*'   => 'required|integer|exists:service_types,id',
             'legal_name'          => 'required|alpha|max:20',
             'address1'            => 'required|string|max:50',
             'address2'            => 'nullable|string|max:50',
@@ -69,9 +69,10 @@ class VendorController extends Controller
             'zip_code'            => 'nullable|integer|min:6',
         ]);
 
-        $vendor = Vendor::create($request->only('service_type_id', 'legal_name', 'address1', 'address2', 'phone', 'zip_code'));
+        $vendor = Vendor::create($request->only('legal_name', 'address1', 'address2', 'phone', 'zip_code'));
+        $vendor->services()->sync($request->service_type_id);
 
-        return ok('Vendor created successfully!', $vendor);
+        return ok('Vendor created successfully!', $vendor->load('services'));
     }
 
     /**
@@ -84,7 +85,7 @@ class VendorController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'service_type_id'     => 'nullable|integer|exists:service_types,id',
+            'service_type_id.*'   => 'nullable|integer|exists:service_types,id',
             'legal_name'          => 'required|alpha|max:20',
             'address1'            => 'required|string|max:50',
             'address2'            => 'nullable|string|max:50',
@@ -94,9 +95,10 @@ class VendorController extends Controller
         ]);
 
         $vendor = Vendor::findOrFail($id);
-        $vendor->update($request->only('service_type_id', 'legal_name', 'address1', 'address2', 'phone'));
+        $vendor->update($request->only('legal_name', 'address1', 'address2', 'phone'));
+        $vendor->services()->sync($request->service_type_id);
 
-        return ok('Vendor updated successfully!', $vendor);
+        return ok('Vendor updated successfully!', $vendor->load('services'));
     }
 
     /**
@@ -120,7 +122,11 @@ class VendorController extends Controller
      */
     public function delete($id)
     {
-        Vendor::findOrFail($id)->delete();
+        $vendor = Vendor::findOrFail($id);
+        if ($vendor->services()->count() > 0) {
+            $vendor->services()->detach();
+        }
+        $vendor->delete();
 
         return ok('Vendor deleted successfully');
     }

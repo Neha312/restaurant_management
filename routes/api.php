@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\UserController;
 use App\Http\Controllers\V1\OrderController;
 use App\Http\Controllers\V1\VendorController;
@@ -26,9 +26,9 @@ use App\Http\Controllers\V1\RestaurantPictureController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::post('login', [UserController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('logout', [UserController::class, 'logout']);
+        Route::get('logout', [AuthController::class, 'logout']);
         Route::controller(ServiceTypeController::class)->prefix('service')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
             Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
@@ -90,7 +90,7 @@ Route::prefix('v1')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Manager|Vendor');
             Route::post('create', 'create')->middleware('check:Vendor');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('status', 'status')->middleware('check:Vendor');
+            Route::post('status/{id}', 'status')->middleware('check:Vendor');
         });
         Route::controller(CousineTypeController::class)->prefix('cousine')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');

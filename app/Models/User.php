@@ -46,7 +46,7 @@ class User extends Authenticatable
     /* User belongs to many restaurants Relationship */
     public function restaurantUsers()
     {
-        return $this->belongsToMany(Restaurant::class, 'restaurant_users', 'user_id', 'restaurant_id');
+        return $this->belongsToMany(Restaurant::class, 'restaurant_users', 'user_id', 'restaurant_id')->withPivot('is_owner');
     }
     /* boot method */
     public static function boot()

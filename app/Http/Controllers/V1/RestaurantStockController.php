@@ -62,13 +62,14 @@ class RestaurantStockController extends Controller
     {
         $this->validate($request, [
             'restaurant_id'      => 'required|integer|exists:restaurants,id',
-            'stock_type_id'      => 'required|integer|exists:stock_types,id',
+            'stock_type_id.*'    => 'required|integer|exists:stock_types,id',
             'name'               => 'required|alpha|max:20',
             'available_quantity' => 'required|numeric',
             'minimum_quantity'   => 'nullable|numeric',
         ]);
 
         $stock = RestaurantStock::create($request->only('restaurant_id', 'stock_type_id', 'name', 'available_quantity', 'minimum_quantity'));
+        // $stock->stock()->createMany($request->stock_type_id);
 
         return ok('Restaurant stock created successfully!', $stock);
     }
@@ -84,7 +85,7 @@ class RestaurantStockController extends Controller
     {
         $this->validate($request, [
             'restaurant_id'      => 'nullable|integer|exists:restaurants,id',
-            'stock_type_id'      => 'nullable|integer|exists:stock_types,id',
+            'stock_type_id.*'    => 'nullable|integer|exists:stock_types,id',
             'name'               => 'required|alpha|max:20',
             'available_quantity' => 'nullable|numeric',
             'minimum_quantity'   => 'nullable|numeric',
@@ -92,6 +93,7 @@ class RestaurantStockController extends Controller
 
         $stock = RestaurantStock::findOrFail($id);
         $stock->update($request->only('restaurant_id', 'stock_type_id', 'name', 'available_quantity', 'minimum_quantity'));
+        // $stock->stock()->createMany($request->stock_type_id);
 
         return ok('Restaurant stock updated successfully!', $stock);
     }
