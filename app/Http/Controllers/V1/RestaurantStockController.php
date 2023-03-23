@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\RestaurantStock;
+use App\Http\Controllers\Controller;
 
 class RestaurantStockController extends Controller
 {
@@ -24,7 +25,7 @@ class RestaurantStockController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = RestaurantStock::query()->with('restaurants');
+        $query = RestaurantStock::query();
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -51,28 +52,6 @@ class RestaurantStockController extends Controller
 
         return ok('Restaurant Stock list', $data);
     }
-
-    /**
-     * API of Create Restaurant stock
-     *
-     *@param  \Illuminate\Http\Request  $request
-     *@return json $stock
-     */
-    public function create(Request $request)
-    {
-        $this->validate($request, [
-            'restaurant_id'      => 'required|integer|exists:restaurants,id',
-            'stock_type_id'      => 'required|integer|exists:stock_types,id',
-            'name'               => 'required|alpha|max:20',
-            'available_quantity' => 'required|numeric',
-            'minimum_quantity'   => 'nullable|numeric',
-        ]);
-
-        $stock = RestaurantStock::create($request->only('restaurant_id', 'stock_type_id', 'name', 'available_quantity', 'minimum_quantity'));
-
-        return ok('Restaurant stock created successfully!', $stock);
-    }
-
     /**
      * API of Update Restaurant stock
      *
@@ -83,17 +62,33 @@ class RestaurantStockController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'restaurant_id'      => 'nullable|integer|exists:restaurants,id',
-            'stock_type_id'      => 'nullable|integer|exists:stock_types,id',
-            'name'               => 'required|alpha|max:20',
-            'available_quantity' => 'nullable|numeric',
-            'minimum_quantity'   => 'nullable|numeric',
+            'stocks.*'                      => 'required|array',
+            'stocks.*.stock_type_id'        => 'required|integer|exists:stock_types,id',
+            'stocks.*.name'                 => 'required|string|max:20',
+            'stocks.*.available_quantity'   => 'required|numeric',
+            'stocks.*.minimum_quantity'     => 'required|numeric',
         ]);
+        $stockIds = array_column($request->stocks, 'stock_type_id');
+        $restaurant = Restaurant::findOrFail($id);
+        $restaurant_id = RestaurantStock::where('restaurant_id', $restaurant->id)->whereNotIn('stock_type_id',  $stockIds);
+        if ($restaurant_id->count() > 0) {
+            $restaurant_id->delete();
+        }
+        foreach ($request['stocks'] as $stock) {
+            RestaurantStock::updateOrCreate(
+                [
+                    'restaurant_id' => $restaurant->id,
+                    'stock_type_id' => $stock['stock_type_id']
+                ],
+                [
+                    'name'               => $stock['name'],
+                    'available_quantity' => $stock['available_quantity'],
+                    'minimum_quantity'   => $stock['minimum_quantity'],
 
-        $stock = RestaurantStock::findOrFail($id);
-        $stock->update($request->only('restaurant_id', 'stock_type_id', 'name', 'available_quantity', 'minimum_quantity'));
-
-        return ok('Restaurant stock updated successfully!', $stock);
+                ]
+            );
+        }
+        return ok('Restaurant Stock Updated');
     }
 
     /**

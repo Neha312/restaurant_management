@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\V1;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Vendor;
 use App\Models\VendorStaff;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class VendorStaffController extends Controller
 {
@@ -25,7 +26,7 @@ class VendorStaffController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = VendorStaff::query()->with('vendors');
+        $query = VendorStaff::query();
 
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
@@ -67,10 +68,13 @@ class VendorStaffController extends Controller
             'last_name'          => 'required|alpha|max:20',
             'phone'              => 'nullable|integer|min:10',
         ]);
-
+        // if (Auth::check()) {
+        //     $vendor = Vendor::where('id', $request->vendor_id)->exists();
+        //     if ($vendor) {
         $vendor_staff = VendorStaff::create($request->only('vendor_id', 'first_name', 'last_name', 'phone'));
-
         return ok('Vendor staff created successfully!', $vendor_staff);
+        //     }
+        // }
     }
 
     /**

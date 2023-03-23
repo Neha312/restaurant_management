@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\RestaurantBillTrail;
 
 class OrderController extends Controller
 {
@@ -24,7 +25,7 @@ class OrderController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Order::query()->with('restaurants', 'vendors');
+        $query = Order::query();
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -64,12 +65,9 @@ class OrderController extends Controller
             'restaurant_id'      => 'required|integer|exists:restaurants,id',
             'vendor_id'          => 'required|integer|exists:vendors,id',
             'service_type_id'    => 'required|integer|exists:service_types,id',
-            'quantity'           => 'required|numeric',
-            'name'               => 'required|alpha|max:20',
-
+            'quantity'           => 'required|numeric'
         ]);
-        $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'name', 'quantity'));
-
+        $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'quantity'));
         return ok('Order created successfully!', $order);
     }
     /**
@@ -80,34 +78,10 @@ class OrderController extends Controller
      */
     public function get($id)
     {
-        $order = Order::with(['restaurants', 'services', 'vendors'])->findOrFail($id);
+        $order = Order::with(['restaurant', 'service', 'vendor'])->findOrFail($id);
 
         return ok('Order retrieved successfully', $order);
     }
-    /**
-     * API of Update Order
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $id
-     * @return json $order
-     */
-    public function update(Request $request, $id)
-    {
-        $this->validate($request, [
-            'restaurant_id'      => 'nullable|integer|exists:restaurants,id',
-            'vendor_id'          => 'nullable|integer|exists:vendors,id',
-            'service_type_id'    => 'nullable|integer|exists:service_types,id',
-            'quantity'           => 'required|numeric',
-            'name'               => 'required|alpha|max:20',
-        ]);
-
-        $order = Order::findOrFail($id);
-        $order->update($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'name', 'quantity'));
-
-        return ok('Order updated successfully!', $order);
-    }
-
-
     /**
      * API of Delete Order
      *
@@ -119,5 +93,26 @@ class OrderController extends Controller
         Order::findOrFail($id)->delete();
 
         return ok('Order deleted successfully');
+    }
+    /**
+     * API of Order status
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  $id
+     * @return json $order
+     */
+    public function status($id, Request $request)
+    {
+        $this->validate($request, [
+            'status'   => 'required|in:DP,D',
+        ]);
+        $order = Order::findOrFail($id);
+        $order->update($request->only('status'));
+        $trail = $order->bill->id;
+        if ($request->status == "D") {
+            $status = 'P';
+            $trails = RestaurantBillTrail::create(['status' => $status] + ['restaurant_bill_id' => $trail]);
+        }
+        return ok('Order status updated Successfully', $order, $trails);
     }
 }

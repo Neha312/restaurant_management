@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('restaurant_users', function (Blueprint $table) {
             $table->bigInteger('restaurant_id')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->boolean('is_owner')->default(false);
             $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

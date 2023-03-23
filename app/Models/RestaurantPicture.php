@@ -2,24 +2,32 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Model;
 
-class RestaurantPicture extends BaseModel
+class RestaurantPicture extends Model
 {
     protected $fillable = [
         'id',
         'restaurant_id',
-        'created_by',
-        'updated_by'
+        'picture',
+        'type'
     ];
+    public $timestamps = false;
+    /* Accessors */
+    public function getTypeNameAttribute()
+    {
+        switch ($this->type) {
+            case 'M':
+                return 'Menu';
+            case 'O':
+                return 'Other';
+            default:
+                return $this->type;
+        }
+    }
     /* Restaurant picture belongs to restaurant Relationship */
     public function restaurants()
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
-    }
-    /* Restaurant picture has many images Relationship */
-    public function images()
-    {
-        return $this->hasMany(Picture::class, 'restaurant_picture_id');
     }
 }

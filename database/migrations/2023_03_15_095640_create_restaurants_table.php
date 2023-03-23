@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('restaurants', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50)->nullable();
-            $table->string('profile_picture')->nullable();
+            $table->string('logo')->nullable();
             $table->string('address1', 50)->nullable();
             $table->string('address2', 50)->nullable();
             $table->string('zip_code', 6)->nullable();

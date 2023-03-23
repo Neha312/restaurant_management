@@ -10,9 +10,9 @@ class ServiceType extends BaseModel
         'id',
         'name',
     ];
-    /* Service has many vendors Relationship */
+    /* Service type belongs to many vendor Relationship */
     public function vendors()
     {
-        return $this->hasMany(Vendor::class, 'service_type_id');
+        return $this->belongsToMany(Vendor::class, 'service_type_vendors', 'service_type_id', 'vendor_id');
     }
 }

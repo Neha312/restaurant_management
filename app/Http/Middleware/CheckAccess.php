@@ -19,7 +19,7 @@ class CheckAccess
         // dd($roles);
         $flag = false;
         foreach ($roles as $role) {
-            if ($role == auth()->user()->roles->name) {
+            if ($role == auth()->user()->role->name) {
                 $flag = true;
                 return $next($request);
             }
