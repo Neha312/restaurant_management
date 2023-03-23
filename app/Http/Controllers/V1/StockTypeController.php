@@ -24,7 +24,7 @@ class StockTypeController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = StockType::query()->with('resStock');
+        $query = StockType::query();
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -61,7 +61,7 @@ class StockTypeController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'name'  => 'required|alpha|max:30',
+            'name'  => 'required|string|max:30',
         ]);
 
         $stock = StockType::create($request->only('name'));
@@ -78,7 +78,7 @@ class StockTypeController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => 'required|alpha|max:30',
+            'name' => 'required|string|max:30',
         ]);
 
         $stock = StockType::findOrFail($id);

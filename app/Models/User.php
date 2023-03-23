@@ -34,7 +34,7 @@ class User extends Authenticatable
         'updated_by'
     ];
     /* User belongs to roles Relationship */
-    public function roles()
+    public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
@@ -47,6 +47,11 @@ class User extends Authenticatable
     public function restaurantUsers()
     {
         return $this->belongsToMany(Restaurant::class, 'restaurant_users', 'user_id', 'restaurant_id')->withPivot('is_owner');
+    }
+    /* User has many vendors Relationship */
+    public function vendors()
+    {
+        return $this->hasMany(Vendor::class, 'user_id');
     }
     /* boot method */
     public static function boot()

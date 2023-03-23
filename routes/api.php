@@ -72,13 +72,6 @@ Route::prefix('v1')->group(function () {
             Route::post('update/{id}', 'update')->middleware('check:Vendor');
             Route::post('delete/{id}', 'delete')->middleware('check:Vendor');
         });
-        Route::controller(RestaurantPictureController::class)->prefix('picture')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
-            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
-        });
         Route::controller(RestaurantStockController::class)->prefix('stock')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
             Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
@@ -90,7 +83,6 @@ Route::prefix('v1')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Manager|Vendor');
             Route::post('create', 'create')->middleware('check:Vendor');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('status/{id}', 'status')->middleware('check:Vendor');
         });
         Route::controller(CousineTypeController::class)->prefix('cousine')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
@@ -103,8 +95,8 @@ Route::prefix('v1')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
             Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
+            Route::post('status/{id}', 'status')->middleware('check:Vendor');
         });
     });
 });

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('joining_date');
             $table->date('ending_date')->nullable();
             $table->string('email')->unique();
-            $table->string('password', 251);
+            $table->string('password', 251)->nullable();
             $table->string('address1', 30)->nullable();
             $table->string('address2', 30)->nullable();
             $table->string('zip_code', 6)->nullable();

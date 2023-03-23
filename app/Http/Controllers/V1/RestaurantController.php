@@ -5,8 +5,9 @@ namespace App\Http\Controllers\V1;
 use App\Models\User;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\RestaurantPicture;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class RestaurantController extends Controller
@@ -27,7 +28,7 @@ class RestaurantController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Restaurant::query()->with(['users', 'cousines', 'orders']);
+        $query = Restaurant::query()->with('users');
 
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
@@ -64,18 +65,24 @@ class RestaurantController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'user_id'             => 'required|integer|exists:users,id',
-            'cousine_type_id.*'   => 'required|integer|exists:cousine_types,id',
-            'name'                => 'required|alpha|max:20',
-            'address1'            => 'required|string|max:50',
-            'address2'            => 'nullable|string|max:50',
-            'zip_code'            => 'required|integer|min:6',
-            'phone'               => 'required|integer|min:10',
-            'logo'                => 'required|mimes:jpg,jpeg,png,bmp,tiff',
-            'type'                => 'required|in:M,O',
-            'picture.*'           => 'required|mimes:jpg,jpeg,png,bmp,tiff'
+            'user_id'                       => 'required|integer|exists:users,id',
+            'cousine_type_id.*'             => 'required|integer|exists:cousine_types,id',
+            'name'                          => 'required|string|max:20',
+            'address1'                      => 'required|string|max:50',
+            'address2'                      => 'nullable|string|max:50',
+            'zip_code'                      => 'required|integer|min:6',
+            'phone'                         => 'required|integer|min:10',
+            'logo'                          => 'required|mimes:jpg,jpeg,png,bmp,tiff',
+            'type'                          => 'required|in:M,O',
+            'picture.*'                     => 'required|mimes:jpg,jpeg,png,bmp,tiff',
+            'stocks.*'                      => 'required|array',
+            'stocks.*.stock_type_id'        => 'required|integer|exists:stock_types,id',
+            'stocks.*.name'                 => 'required|alpha|max:20',
+            'stocks.*.available_quantity'   => 'required|numeric',
+            'stocks.*.minimum_quantity'     => 'required|numeric',
 
         ]);
+
         $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();
         $request->logo->storeAs("public/pictures", $imageName);
 
@@ -84,23 +91,25 @@ class RestaurantController extends Controller
         $image = array();
         if ($request->hasFile('picture')) {
             foreach ($request->picture as $file) {
-                $image_name =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
+                $image_name  =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
                 $upload_path =  'public/pictures';
                 $file->storeAs($upload_path, $image_name);
                 $image[] = [
                     'restaurant_id' => $request->id,
-                    'picture' => $image_name,
-                    'type' => $request->type
+                    'picture'       => $image_name,
+                    'type'          => $request->type
                 ];
             }
         }
-        if ($user->role_id == 2) {
+        if ($user->role->name == "Owner") {
             $restaurant = Restaurant::create($request->only('name', 'address1', 'address2', 'phone', 'zip_code') + ['logo' => $imageName]);
             $restaurant->users()->syncWithoutDetaching([$request->user_id => ['is_owner' => true]]);
             $restaurant->cousines()->syncWithoutDetaching($request->cousine_type_id);
             $restaurant->pictures()->createMany($image);
-            return ok('Restaurant created successfully!',  $restaurant->load('users', 'pictures', 'cousines'));
+            $restaurant->stocks()->createMany($request->stocks);
+            return ok('Restaurant created successfully!',  $restaurant->load('users', 'pictures', 'cousines', 'stocks'));
         }
+        return 'Restaurant can not created!';
     }
 
     /**
@@ -115,7 +124,7 @@ class RestaurantController extends Controller
         $this->validate($request, [
             'user_id.*'           => 'nullable|integer|exists:users,id',
             'cousine_type_id.*'   => 'nullable|integer|exists:cousine_types,id',
-            'name'                => 'required|alpha|max:20',
+            'name'                => 'required|string|max:20',
             'address1'            => 'nullable|string|max:50',
             'address2'            => 'nullable|string|max:50',
             'zip_code'            => 'nullable|integer|min:6',
@@ -183,6 +192,7 @@ class RestaurantController extends Controller
             $restaurant->users()->detach();
             $restaurant->cousines()->detach();
             $restaurant->pictures()->delete();
+            $restaurant->stocks()->delete();
         }
         $restaurant->delete();
         return ok('Restaurant deleted successfully');

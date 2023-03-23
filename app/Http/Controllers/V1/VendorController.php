@@ -24,7 +24,7 @@ class VendorController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Vendor::query()->with('staff');
+        $query = Vendor::query();
 
         if ($request->search) {
             $query = $query->where('legal_name', 'like', "%$request->search%");
@@ -51,30 +51,6 @@ class VendorController extends Controller
 
         return ok('Vendor list', $data);
     }
-
-    /**
-     * API of Create Vendor
-     *
-     *@param  \Illuminate\Http\Request  $request
-     *@return json $vendor
-     */
-    public function create(Request $request)
-    {
-        $this->validate($request, [
-            'service_type_id.*'   => 'required|integer|exists:service_types,id',
-            'legal_name'          => 'required|alpha|max:20',
-            'address1'            => 'required|string|max:50',
-            'address2'            => 'nullable|string|max:50',
-            'phone'               => 'nullable|integer|min:10',
-            'zip_code'            => 'nullable|integer|min:6',
-        ]);
-
-        $vendor = Vendor::create($request->only('legal_name', 'address1', 'address2', 'phone', 'zip_code'));
-        $vendor->services()->sync($request->service_type_id);
-
-        return ok('Vendor created successfully!', $vendor->load('services'));
-    }
-
     /**
      * API of Update Vendor
      *
@@ -86,16 +62,8 @@ class VendorController extends Controller
     {
         $this->validate($request, [
             'service_type_id.*'   => 'nullable|integer|exists:service_types,id',
-            'legal_name'          => 'required|alpha|max:20',
-            'address1'            => 'required|string|max:50',
-            'address2'            => 'nullable|string|max:50',
-            'phone'               => 'nullable|integer',
-            'zip_code'            => 'nullable|integer|min:6',
-
         ]);
-
         $vendor = Vendor::findOrFail($id);
-        $vendor->update($request->only('legal_name', 'address1', 'address2', 'phone'));
         $vendor->services()->sync($request->service_type_id);
 
         return ok('Vendor updated successfully!', $vendor->load('services'));

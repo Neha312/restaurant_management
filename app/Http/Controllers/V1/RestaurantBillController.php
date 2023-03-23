@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\V1;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\RestaurantBill;
 use App\Models\RestaurantBillTrail;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class RestaurantBillController extends Controller
 {
@@ -25,7 +26,7 @@ class RestaurantBillController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = RestaurantBill::query()->with('trail');
+        $query = RestaurantBill::query();
 
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");
@@ -63,6 +64,7 @@ class RestaurantBillController extends Controller
     {
         $this->validate($request, [
             'restaurant_id'      => 'required|integer|exists:restaurants,id',
+            'order_id'           => 'required|integer|exists:orders,id',
             'vendor_id'          => 'required|integer|exists:vendors,id',
             'stock_type_id'      => 'required|integer|exists:stock_types,id',
             'total_amount'       => 'required|numeric',
@@ -72,10 +74,10 @@ class RestaurantBillController extends Controller
 
         ]);
         $total_amount = $request->total_amount + $request->tax;
-        $bill = RestaurantBill::create($request->only('restaurant_id', 'vendor_id', 'stock_type_id', 'tax', 'due_date') + ['total_amount' => $total_amount]);
+        $bill  = RestaurantBill::create($request->only('restaurant_id', 'vendor_id', 'order_id', 'stock_type_id', 'tax', 'due_date') + ['total_amount' => $total_amount]);
         $trail = RestaurantBillTrail::create($request->only('status'));
-        $bill->trail()->save($trail);
-        return ok('Restaurant bill created successfully!', $bill->load('trail'));
+        $bill->trails()->save($trail);
+        return ok('Restaurant bill created successfully!', $bill->load('trails'));
     }
     /**
      * API of get perticuler Restaurant bill details
@@ -85,25 +87,8 @@ class RestaurantBillController extends Controller
      */
     public function get($id)
     {
-        $bill = RestaurantBill::with(['restaurants', 'stocks', 'vendors', 'trail'])->findOrFail($id);
+        $bill = RestaurantBill::with(['restaurant', 'stock', 'vendor', 'trails'])->findOrFail($id);
 
         return ok('Restaurant bill retrieved successfully', $bill);
-    }
-    /**
-     * API of Restaurant bill status
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $request
-     * @return json $bill
-     */
-    public function status(Request $request)
-    {
-        $this->validate($request, [
-            'restaurant_bill_id' => 'required|integer|exists:restaurant_bills,id',
-            'status'             => 'required|in:PN,P',
-        ]);
-
-        $bill = RestaurantBillTrail::create($request->only('status', 'restaurant_bill_id'));
-        return ok('Bill status updated Successfully', $bill);
     }
 }

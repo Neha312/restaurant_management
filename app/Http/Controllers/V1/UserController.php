@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Models\Role;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -27,7 +28,7 @@ class UserController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = User::query()->with('roles');
+        $query = User::query();
 
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
@@ -77,22 +78,29 @@ class UserController extends Controller
             'phone'                     => 'nullable|integer|min:10',
             'total_leave'               => 'required|numeric',
             'used_leave'                => 'nullable|numeric',
-            'restaurant_id'            => 'required_if:role_id,3,4,5,6|integer|exists:restaurants,id',
+            'restaurant_id'             => 'required_if:role_id,3,4,5,6|integer|exists:restaurants,id',
+            'service_type_id.*'         => 'required_if:role_id,7|integer|exists:service_types,id',
 
         ]);
-
-        if ($request->role_id != 1) {
-            if ($request->role_id == 2 || $request->role_id == 7) {
+        $role = Role::findOrFail($request->role_id);
+        if ($role->name != "Admin") {
+            if ($role->name == "Owner") {
                 $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
-                return ok('User created successfully!');
-            } elseif ($request->role_id == 3 || $request->role_id == 4 || $request->role_id == 5 || $request->role_id == 5) {
+                return ok('Owner created successfully!', $user);
+            } elseif ($role->name == 'Manager' || $role->name == 'Chef' || $role->name == "Waiter" || $role->name == "Cashier") {
                 $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
                 $user->restaurantUsers()->attach([$request->restaurant_id => ['is_owner' => false]]);
                 return ok('User created successfully!', $user->load('restaurantUsers'));
-            } else
-                return ok('User can not created!');
-        } else {
+            } elseif ($role->name  == "Vendor") {
+                $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
+                $vendor = Vendor::create($request->only(['user_id' => $user->id]));
+                $user->vendors()->save($vendor);
+                $vendor->services()->attach($request->service_type_id);
 
+                return ok('Vendor created successfully!', $user->load('vendors'));
+            } else
+                return 'User can not created!';
+        } else {
             return 'Admin Cannot be created !';
         }
     }
@@ -138,7 +146,7 @@ class UserController extends Controller
      */
     public function get($id)
     {
-        $user = User::with(['roles', 'restaurants'])->findOrFail($id);
+        $user = User::with(['role', 'restaurants'])->findOrFail($id);
 
         return ok('User retrieved successfully', $user);
     }

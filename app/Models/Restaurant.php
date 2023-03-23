@@ -37,4 +37,9 @@ class Restaurant extends BaseModel
     {
         return $this->belongsToMany(CousineType::class, 'cousine_type_restaurants', 'restaurant_id', 'cousine_type_id');
     }
+    /* Restaurant has many stock Relationship */
+    public function stocks()
+    {
+        return $this->hasMany(RestaurantStock::class, 'restaurant_id');
+    }
 }
