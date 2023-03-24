@@ -26,7 +26,11 @@ class RestaurantStockController extends Controller
         ]);
 
         $query = RestaurantStock::query();
-
+        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
+            $query->whereHas('restaurant.user', function ($query) {
+                $query->where('id', auth()->id());
+            });
+        }
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
@@ -99,7 +103,7 @@ class RestaurantStockController extends Controller
      */
     public function get($id)
     {
-        $stock = RestaurantStock::with(['restaurants', 'stocks'])->findOrFail($id);
+        $stock = RestaurantStock::with(['restaurant', 'stock'])->findOrFail($id);
 
         return ok('Restaurant stock retrieved successfully', $stock);
     }

@@ -33,4 +33,9 @@ class Vendor extends BaseModel
     {
         return $this->hasMany(VendorStaff::class, 'vendor_id');
     }
+    /* User has many vendors Relationship */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -26,7 +26,7 @@ class RestaurantPicture extends Model
         }
     }
     /* Restaurant picture belongs to restaurant Relationship */
-    public function restaurants()
+    public function restaurant()
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }

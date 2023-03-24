@@ -95,7 +95,7 @@ class StockTypeController extends Controller
      */
     public function get($id)
     {
-        $stock = StockType::with('resStock')->findOrFail($id);
+        $stock = StockType::with('resStocks')->findOrFail($id);
 
         return ok('Stock type retrieved successfully', $stock);
     }

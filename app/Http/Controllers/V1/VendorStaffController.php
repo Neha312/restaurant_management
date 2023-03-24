@@ -27,6 +27,11 @@ class VendorStaffController extends Controller
         ]);
 
         $query = VendorStaff::query();
+        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
+            $query->whereHas('vendors.user', function ($query) {
+                $query->where('id', auth()->id());
+            });
+        }
 
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
@@ -64,17 +69,13 @@ class VendorStaffController extends Controller
     {
         $this->validate($request, [
             'vendor_id'          => 'required|integer|exists:vendors,id',
-            'first_name'         => 'required|alpha|max:20',
-            'last_name'          => 'required|alpha|max:20',
+            'first_name'         => 'required|string|max:20',
+            'last_name'          => 'required|string|max:20',
             'phone'              => 'nullable|integer|min:10',
         ]);
-        // if (Auth::check()) {
-        //     $vendor = Vendor::where('id', $request->vendor_id)->exists();
-        //     if ($vendor) {
+
         $vendor_staff = VendorStaff::create($request->only('vendor_id', 'first_name', 'last_name', 'phone'));
         return ok('Vendor staff created successfully!', $vendor_staff);
-        //     }
-        // }
     }
 
     /**
@@ -88,14 +89,13 @@ class VendorStaffController extends Controller
     {
         $this->validate($request, [
             'vendor_id'          => 'nullable|integer|exists:vendors,id',
-            'first_name'         => 'required|alpha|max:20',
-            'last_name'          => 'required|alpha|max:20',
+            'first_name'         => 'required|string|max:20',
+            'last_name'          => 'required|string|max:20',
             'phone'              => 'nullable|integer|min:10',
         ]);
 
         $vendor_staff = VendorStaff::findOrFail($id);
         $vendor_staff->update($request->only('vendor_id', 'first_name', 'last_name', 'phone'));
-
         return ok('Vendor staff updated successfully!', $vendor_staff);
     }
 

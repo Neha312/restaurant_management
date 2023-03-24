@@ -27,29 +27,24 @@ use App\Http\Controllers\V1\RestaurantPictureController;
 
 Route::prefix('v1')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('forgetPassword', [AuthController::class, 'forgetPassword']);
+    Route::post('resetPassword/{token}', [AuthController::class, 'resetPassword']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('logout', [AuthController::class, 'logout']);
+        Route::post('changePassword', [AuthController::class, 'changePassword']);
         Route::controller(ServiceTypeController::class)->prefix('service')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
-            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
+            Route::post('create', 'create')->middleware('check:Admin');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
+            Route::post('update/{id}', 'update')->middleware('check:Admin');
+            Route::post('delete/{id}', 'delete')->middleware('check:Admin');
         });
         Route::controller(StockTypeController::class)->prefix('stock_type')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
-            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
+            Route::post('create', 'create')->middleware('check:Admin');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
-        });
-        Route::controller(VendorController::class)->prefix('vendor')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
-            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
-            Route::post('status/{id}', 'status')->middleware('check:Admin|Owner|Manager');
+            Route::post('update/{id}', 'update')->middleware('check:Admin');
+            Route::post('delete/{id}', 'delete')->middleware('check:Admin');
         });
         Route::controller(UserController::class)->prefix('user')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
@@ -58,12 +53,28 @@ Route::prefix('v1')->group(function () {
             Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
         });
+        Route::controller(CousineTypeController::class)->prefix('cousine')->group(function () {
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
+            Route::post('create', 'create')->middleware('check:Admin');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
+            Route::post('update/{id}', 'update')->middleware('check:Admin');
+            Route::post('delete/{id}', 'delete')->middleware('check:Admin');
+        });
         Route::controller(RestaurantController::class)->prefix('restaurant')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
             Route::post('create', 'create')->middleware('check:Admin');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
             Route::post('update/{id}', 'update')->middleware('check:Admin');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin');
+            Route::get('data/{id}', 'data')->middleware('check:Admin|Owner|Manager');
+        });
+        Route::controller(VendorController::class)->prefix('vendor')->group(function () {
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
+            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
+            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
+            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
+            Route::post('status/{id}', 'status')->middleware('check:Admin|Owner|Manager');
         });
         Route::controller(VendorStaffController::class)->prefix('staff')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
@@ -79,24 +90,17 @@ Route::prefix('v1')->group(function () {
             Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
         });
-        Route::controller(RestaurantBillController::class)->prefix('bill')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Manager|Vendor');
-            Route::post('create', 'create')->middleware('check:Vendor');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
-        });
-        Route::controller(CousineTypeController::class)->prefix('cousine')->group(function () {
-            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
-            Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
-            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
-            Route::post('update/{id}', 'update')->middleware('check:Admin|Owner|Manager');
-            Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
-        });
         Route::controller(OrderController::class)->prefix('order')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
             Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin|Owner|Manager');
             Route::post('status/{id}', 'status')->middleware('check:Vendor');
+        });
+        Route::controller(RestaurantBillController::class)->prefix('bill')->group(function () {
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
+            Route::post('create', 'create')->middleware('check:Vendor');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
         });
     });
 });
