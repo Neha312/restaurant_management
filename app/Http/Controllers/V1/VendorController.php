@@ -25,6 +25,11 @@ class VendorController extends Controller
         ]);
 
         $query = Vendor::query();
+        if (auth()->user()->role->name == "Vendor") {
+            $query->whereHas('user', function ($query) {
+                $query->where('id', auth()->id());
+            });
+        }
 
         if ($request->search) {
             $query = $query->where('legal_name', 'like', "%$request->search%");
@@ -42,7 +47,7 @@ class VendorController extends Controller
         }
 
         /* Get records */
-        $vendor = $query->get();
+        $vendor = $query->with('user')->get();
 
         $data = [
             'count'   => $count,
@@ -77,7 +82,7 @@ class VendorController extends Controller
      */
     public function get($id)
     {
-        $vendor = Vendor::with(['services', 'staff'])->findOrFail($id);
+        $vendor = Vendor::with(['user', 'services', 'staffs'])->findOrFail($id);
 
         return ok('Vendor retrieved successfully', $vendor);
     }

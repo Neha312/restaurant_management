@@ -26,9 +26,13 @@ class OrderController extends Controller
         ]);
 
         $query = Order::query();
-
+        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
+            $query->whereHas('vendor.user', function ($query) {
+                $query->where('id', auth()->id());
+            });
+        }
         if ($request->search) {
-            $query = $query->where('name', 'like', "%$request->search%");
+            $query = $query->where('id', 'like', "%$request->search%");
         }
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);

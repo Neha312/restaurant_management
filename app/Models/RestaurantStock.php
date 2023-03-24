@@ -15,12 +15,12 @@ class RestaurantStock extends BaseModel
         'minimum_quantity'
     ];
     /* Restaurant stock belongs to restaurant Relationship */
-    public function restaurants()
+    public function restaurant()
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
     /* Restaurant stock belongs to stock type Relationship */
-    public function stocks()
+    public function stock()
     {
         return $this->belongsTo(StockType::class, 'stock_type_id');
     }

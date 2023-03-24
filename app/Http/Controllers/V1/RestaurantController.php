@@ -28,8 +28,13 @@ class RestaurantController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
         ]);
 
-        $query = Restaurant::query()->with('users');
+        $query = Restaurant::query();
 
+        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
+            $query->whereHas('users', function ($query) {
+                $query->where('id', auth()->id());
+            });
+        }
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
@@ -77,7 +82,7 @@ class RestaurantController extends Controller
             'picture.*'                     => 'required|mimes:jpg,jpeg,png,bmp,tiff',
             'stocks.*'                      => 'required|array',
             'stocks.*.stock_type_id'        => 'required|integer|exists:stock_types,id',
-            'stocks.*.name'                 => 'required|alpha|max:20',
+            'stocks.*.name'                 => 'required|string|max:20',
             'stocks.*.available_quantity'   => 'required|numeric',
             'stocks.*.minimum_quantity'     => 'required|numeric',
 
@@ -174,11 +179,21 @@ class RestaurantController extends Controller
      */
     public function get($id)
     {
-        $restaurant = Restaurant::with(['users', 'cousines', 'pictures', 'orders'])->findOrFail($id);
+        $restaurant = Restaurant::with(['users', 'cousines', 'pictures', 'orders', 'stocks'])->findOrFail($id);
 
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
-
+    /**
+     * API of get perticuler restaurant details with their vendor  staff
+     *
+     * @param  $id
+     * @return  json $restaurant
+     */
+    public function data($id)
+    {
+        $restaurant = Restaurant::with(['users:id,role_id,first_name,email,phone,address1', 'cousines:id,name', 'orders.service:id,name', 'orders.vendor.user:id,role_id,first_name,email,phone,address1'])->findOrFail($id);
+        return ok('Restaurant retrieved successfully',  $restaurant);
+    }
     /**
      * API of Delete Restaurant
      *

@@ -27,7 +27,11 @@ class RestaurantBillController extends Controller
         ]);
 
         $query = RestaurantBill::query();
-
+        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
+            $query->whereHas('restaurant.users', function ($query) {
+                $query->where('id', auth()->id());
+            });
+        }
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");
         }

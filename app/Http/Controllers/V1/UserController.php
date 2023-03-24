@@ -29,7 +29,9 @@ class UserController extends Controller
         ]);
 
         $query = User::query();
-
+        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
+            $query->where('id', auth()->id());
+        }
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
         }
@@ -66,8 +68,8 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'role_id'                   => 'required|integer|exists:roles,id',
-            'first_name'                => 'required|alpha|max:20',
-            'last_name'                 => 'required|alpha|max:20',
+            'first_name'                => 'required|string|max:20',
+            'last_name'                 => 'required|stringmax:20',
             'email'                     => 'required|email|unique:users,email',
             'joining_date'              => 'required|date',
             'ending_date'               => 'nullable|date|after:joining_date',
