@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Models\User;
+use App\Mail\BillMail;
 use Illuminate\Http\Request;
 use App\Models\RestaurantBill;
 use App\Models\RestaurantBillTrail;
 use App\Http\Controllers\Controller;
+use App\Models\RestaurantUser;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class RestaurantBillController extends Controller
 {
@@ -81,6 +85,12 @@ class RestaurantBillController extends Controller
         $bill  = RestaurantBill::create($request->only('restaurant_id', 'vendor_id', 'order_id', 'stock_type_id', 'tax', 'due_date') + ['total_amount' => $total_amount]);
         $trail = RestaurantBillTrail::create($request->only('status'));
         $bill->trails()->save($trail);
+        //send mail
+        $restaurant = $bill->restaurant;
+        $owner = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+        $user = User::where('id', $owner->user_id)->first();
+        Mail::to($user->email)->send(new BillMail($bill));
+
         return ok('Restaurant bill created successfully!', $bill->load('trails'));
     }
     /**

@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\V1;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Vendor;
+use App\Mail\OrderMail;
+use Illuminate\Http\Request;
 use App\Models\RestaurantBillTrail;
+use App\Http\Controllers\Controller;
+use App\Notifications\BillPaidSuccess;
+use App\Notifications\OrderStatusUpdated;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -71,8 +76,17 @@ class OrderController extends Controller
             'service_type_id'    => 'required|integer|exists:service_types,id',
             'quantity'           => 'required|numeric'
         ]);
-        $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'quantity'));
-        return ok('Order created successfully!', $order);
+        $vendor = Vendor::where('id', $request->vendor_id)->first();
+        $user = $vendor->user()->first();
+        // dd($user->email);
+        if ($vendor->status == 'A') {
+            $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'quantity'));
+            // dd($order->id);
+            Mail::to($user->email)->send(new OrderMail($order));
+            return ok('Order created successfully!', $order);
+        } else {
+            return 'This Vendor is In-active';
+        }
     }
     /**
      * API of get perticuler Order
@@ -112,11 +126,14 @@ class OrderController extends Controller
         ]);
         $order = Order::findOrFail($id);
         $order->update($request->only('status'));
-        $trail = $order->bill->id;
+        $bill = $order->bill;
+        $trail = $bill->id;
         if ($request->status == "D") {
-            $status = 'P';
-            $trails = RestaurantBillTrail::create(['status' => $status] + ['restaurant_bill_id' => $trail]);
+            $trails = RestaurantBillTrail::create(['status' => "P"] + ['restaurant_bill_id' => $trail]);
+            $bill->vendor->user->notify(new BillPaidSuccess($trails, $order, $bill));
         }
-        return ok('Order status updated Successfully', $order, $trails);
+        $bill->restaurant->users->first()->notify(new OrderStatusUpdated($order, $bill));
+
+        return ok('Order status updated Successfully', ['Order' => $order, 'Trail' => $trails]);
     }
 }

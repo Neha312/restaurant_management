@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Illuminate\Notifications\Notifiable;
 
 class Order extends BaseModel
 {
+    use Notifiable;
     protected $fillable = [
         'id',
         'restaurant_id',

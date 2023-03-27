@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Illuminate\Notifications\Notifiable;
 
 class RestaurantBillTrail extends BaseModel
 {
+    use Notifiable;
     protected $fillable = [
         'id',
         'restaurant_bill_id',
@@ -22,5 +24,10 @@ class RestaurantBillTrail extends BaseModel
             default:
                 return $this->status;
         }
+    }
+    /* Trail belongs to bill Relationship */
+    public function bill()
+    {
+        return $this->belongsTo(RestaurantBill::class, 'restaurant_bill_id');
     }
 }
