@@ -83,20 +83,6 @@ class AuthController extends Controller
     //reset password function
     public function resetPassword(Request $request, $token)
     {
-        // $pwd = PasswordReset::where('token', $request->token)->first();
-        // if ($pwd) {
-        //     $user = User::where('email', $pwd->email)->first();
-        //     $pwd->delete();
-        //     return ok('Reset Password', ['data' => $user]);
-        // }
-        // $request->validate([
-        //     'password' => 'required|string|min:8|confirmed'
-        // ]);
-        // $user = User::findOrFail($request->id);
-        // $user->password = Hash::make($request->password);
-        // $user->save();
-        // return ok('Reset Password Successfully!');
-
         $psw = Carbon::now()->subMinutes(1)->toDateTimeString();
         PasswordReset::where('created_at', $psw)->delete();
         $request->validate([

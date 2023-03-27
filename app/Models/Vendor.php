@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Models\BaseModel;
+use Illuminate\Notifications\Notifiable;
 
 class Vendor extends BaseModel
 {
+    use Notifiable;
+
     protected $fillable = [
         'id',
         'user_id',
