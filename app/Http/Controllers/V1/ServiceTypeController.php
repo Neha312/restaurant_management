@@ -26,9 +26,12 @@ class ServiceTypeController extends Controller
 
         $query = ServiceType::query();
 
+        /*sorting*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
+
+        /*search*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
@@ -109,7 +112,11 @@ class ServiceTypeController extends Controller
      */
     public function delete($id)
     {
-        ServiceType::findOrFail($id)->delete();
+        $service = ServiceType::findOrFail($id);
+        if ($service->vendors()->count() > 0) {
+            $service->vendors()->detach();
+        }
+        $service->delete();
 
         return ok('Service type deleted successfully');
     }

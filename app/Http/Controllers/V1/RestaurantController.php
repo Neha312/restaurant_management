@@ -21,23 +21,32 @@ class RestaurantController extends Controller
     public function list(Request $request)
     {
         $this->validate($request, [
-            'page'          => 'nullable|integer',
-            'perPage'       => 'nullable|integer',
-            'search'        => 'nullable',
-            'sort_field'    => 'nullable',
-            'sort_order'    => 'nullable|in:asc,desc',
+            'page'              => 'nullable|integer',
+            'perPage'           => 'nullable|integer',
+            'search'            => 'nullable',
+            'sort_field'        => 'nullable',
+            'sort_order'        => 'nullable|in:asc,desc',
+            'cousine_type_id.*' => 'nullable|exists:cousine_types,id'
         ]);
 
         $query = Restaurant::query();
-
         if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
             $query->whereHas('users', function ($query) {
                 $query->where('id', auth()->id());
             });
         }
+        /*filter*/
+        if ($request->cousine_type_id && count($request->cousine_type_id) > 0) {
+            $query->whereHas('cousines', function ($query) use ($request) {
+                $query->whereIn('id', $request->cousine_type_id);
+            });
+        }
+        /*search*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }

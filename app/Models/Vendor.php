@@ -26,7 +26,7 @@ class Vendor extends BaseModel
                 return $this->status;
         }
     }
-    // /* Vendor belongs to many services Relationship */
+    /* Vendor belongs to many services Relationship */
     public function services()
     {
         return $this->belongsToMany(ServiceType::class, 'service_type_vendors', 'vendor_id', 'service_type_id');
@@ -36,7 +36,7 @@ class Vendor extends BaseModel
     {
         return $this->hasMany(VendorStaff::class, 'vendor_id');
     }
-    /* User has many vendors Relationship */
+    /*Vendor belongs to user Relationship */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

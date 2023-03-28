@@ -30,10 +30,12 @@ class VendorController extends Controller
                 $query->where('id', auth()->id());
             });
         }
-
+        /*search*/
         if ($request->search) {
             $query = $query->where('legal_name', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
@@ -98,6 +100,7 @@ class VendorController extends Controller
         $vendor = Vendor::findOrFail($id);
         if ($vendor->services()->count() > 0) {
             $vendor->services()->detach();
+            $vendor->staffs()->delete();
         }
         $vendor->delete();
 

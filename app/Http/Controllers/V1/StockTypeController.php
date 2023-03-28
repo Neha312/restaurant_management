@@ -26,9 +26,12 @@ class StockTypeController extends Controller
 
         $query = StockType::query();
 
+        /*searching*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
@@ -108,7 +111,11 @@ class StockTypeController extends Controller
      */
     public function delete($id)
     {
-        StockType::findOrFail($id)->delete();
+        $stock = StockType::findOrFail($id);
+        if ($stock->resStocks()->count() > 0) {
+            $stock->resStocks()->delete();
+        }
+        $stock->delete();
 
         return ok('Stock type deleted successfully');
     }

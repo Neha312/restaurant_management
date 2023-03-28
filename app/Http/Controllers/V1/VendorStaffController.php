@@ -32,10 +32,12 @@ class VendorStaffController extends Controller
                 $query->where('id', auth()->id());
             });
         }
-
+        /*search*/
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
@@ -73,7 +75,6 @@ class VendorStaffController extends Controller
             'last_name'          => 'required|string|max:20',
             'phone'              => 'nullable|integer|min:10',
         ]);
-
         $vendor_staff = VendorStaff::create($request->only('vendor_id', 'first_name', 'last_name', 'phone'));
         return ok('Vendor staff created successfully!', $vendor_staff);
     }
@@ -107,7 +108,7 @@ class VendorStaffController extends Controller
      */
     public function get($id)
     {
-        $vendor_staff = VendorStaff::with(['vendors'])->findOrFail($id);
+        $vendor_staff = VendorStaff::with(['vendor'])->findOrFail($id);
 
         return ok('Vendor staff retrieved successfully', $vendor_staff);
     }

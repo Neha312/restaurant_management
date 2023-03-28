@@ -26,15 +26,25 @@ class UserController extends Controller
             'search'        => 'nullable',
             'sort_field'    => 'nullable',
             'sort_order'    => 'nullable|in:asc,desc',
+            'role_id'       => 'nullable|exists:roles,id',
         ]);
 
         $query = User::query();
         if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
             $query->where('id', auth()->id());
         }
+        /*filter*/
+        if ($request->role_id) {
+            $query->whereHas('role', function ($query) use ($request) {
+                $query->where('id', $request->role_id);
+            });
+        }
+        /*search*/
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
@@ -69,7 +79,7 @@ class UserController extends Controller
         $this->validate($request, [
             'role_id'                   => 'required|integer|exists:roles,id',
             'first_name'                => 'required|string|max:20',
-            'last_name'                 => 'required|stringmax:20',
+            'last_name'                 => 'required|string|max:20',
             'email'                     => 'required|email|unique:users,email',
             'joining_date'              => 'required|date',
             'ending_date'               => 'nullable|date|after:joining_date',
@@ -118,8 +128,8 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'role_id'                   => 'nullable|integer|exists:roles,id',
-            'first_name'                => 'required|alpha|max:20',
-            'last_name'                 => 'required|alpha|max:20',
+            'first_name'                => 'required|string|max:20',
+            'last_name'                 => 'required|string|max:20',
             'email'                     => 'nullable|email|unique:users,email',
             'joining_date'              => 'nullable|date',
             'ending_date'               => 'nullable|date|after:joining_date',
@@ -130,8 +140,6 @@ class UserController extends Controller
             'phone'                     => 'nullable|integer|min:10',
             'total_leave'               => 'nullable|numeric',
             'used_leave'                => 'nullable|numeric',
-            'restaurants.*'             => 'required|array',
-
         ]);
 
         $user = User::findOrFail($id);
