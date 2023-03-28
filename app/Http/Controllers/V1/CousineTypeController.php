@@ -26,9 +26,12 @@ class CousineTypeController extends Controller
 
         $query = CousineType::query();
 
+        /*search*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
@@ -108,7 +111,11 @@ class CousineTypeController extends Controller
      */
     public function delete($id)
     {
-        CousineType::findOrFail($id)->delete();
+        $cousine = CousineType::findOrFail($id);
+        if ($cousine->restaurants()->count() > 0) {
+            $cousine->restaurants()->detach();
+        }
+        $cousine->delete();
 
         return ok('Cousine type deleted successfully');
     }

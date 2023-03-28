@@ -9,13 +9,12 @@ class VendorStaff extends BaseModel
     protected $fillable = [
         'id',
         'vendor_id',
-        'stock_type_id',
         'first_name',
         'last_name',
         'phone'
     ];
-    /* Vendor staff belongs to vendors Relationship */
-    public function vendors()
+    /* Vendor staff belongs to vendor Relationship */
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class, 'vendor_id');
     }

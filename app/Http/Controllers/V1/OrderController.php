@@ -28,6 +28,9 @@ class OrderController extends Controller
             'search'        => 'nullable',
             'sort_field'    => 'nullable',
             'sort_order'    => 'nullable|in:asc,desc',
+            'vendor_id'     => 'nullable|exists:vendors,id',
+            'restaurant_id' => 'nullable|exists:restaurants,id'
+
         ]);
 
         $query = Order::query();
@@ -36,9 +39,24 @@ class OrderController extends Controller
                 $query->where('id', auth()->id());
             });
         }
+        /*filter*/
+        if ($request->vendor_id) {
+            $query->whereHas('vendor', function ($query) use ($request) {
+                $query->where('id', $request->vendor_id);
+            });
+        }
+        if ($request->restaurant_id) {
+            $query->whereHas('restaurant', function ($query) use ($request) {
+                $query->where('id', $request->restaurant_id);
+            });
+        }
+
+        /*search*/
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");
         }
+
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
