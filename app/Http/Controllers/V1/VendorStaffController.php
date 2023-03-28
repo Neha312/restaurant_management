@@ -32,6 +32,7 @@ class VendorStaffController extends Controller
                 $query->where('id', auth()->id());
             });
         }
+
         /*search*/
         if ($request->search) {
             $query = $query->where('first_name', 'like', "%$request->search%");

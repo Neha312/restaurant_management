@@ -26,7 +26,7 @@ class StockTypeController extends Controller
 
         $query = StockType::query();
 
-        /*searching*/
+        /*search*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }

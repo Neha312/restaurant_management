@@ -30,6 +30,7 @@ class VendorController extends Controller
                 $query->where('id', auth()->id());
             });
         }
+
         /*search*/
         if ($request->search) {
             $query = $query->where('legal_name', 'like', "%$request->search%");

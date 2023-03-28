@@ -26,7 +26,8 @@ class RestaurantController extends Controller
             'search'            => 'nullable',
             'sort_field'        => 'nullable',
             'sort_order'        => 'nullable|in:asc,desc',
-            'cousine_type_id.*' => 'nullable|exists:cousine_types,id'
+            'cousine_type_id.*' => 'nullable|exists:cousine_types,id',
+            'address'           => 'nullable|exists:restaurants,address2'
         ]);
 
         $query = Restaurant::query();
@@ -35,11 +36,15 @@ class RestaurantController extends Controller
                 $query->where('id', auth()->id());
             });
         }
+
         /*filter*/
         if ($request->cousine_type_id && count($request->cousine_type_id) > 0) {
             $query->whereHas('cousines', function ($query) use ($request) {
                 $query->whereIn('id', $request->cousine_type_id);
             });
+        }
+        if ($request->address) {
+            $query->where('address2', 'like', "%$request->address%");
         }
         /*search*/
         if ($request->search) {

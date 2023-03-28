@@ -33,6 +33,7 @@ class UserController extends Controller
         if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
             $query->where('id', auth()->id());
         }
+
         /*filter*/
         if ($request->role_id) {
             $query->whereHas('role', function ($query) use ($request) {

@@ -38,6 +38,7 @@ class RestaurantBillController extends Controller
                 $query->where('id', auth()->id());
             });
         }
+
         /*filter*/
         if ($request->restaurant_id) {
             $query->whereHas('restaurant', function ($query) use ($request) {
@@ -49,6 +50,7 @@ class RestaurantBillController extends Controller
                 $query->where('id', $request->vendor_id);
             });
         }
+
         /*search*/
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");

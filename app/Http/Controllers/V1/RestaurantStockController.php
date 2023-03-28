@@ -33,12 +33,14 @@ class RestaurantStockController extends Controller
                 $query->where('id', auth()->id());
             });
         }
+
         /*filter*/
         if ($request->stock_type_id && count($request->stock_type_id) > 0) {
             $query->whereHas('stock', function ($query) use ($request) {
                 $query->whereIn('id', $request->stock_type_id);
             });
         }
+
         /*search*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
