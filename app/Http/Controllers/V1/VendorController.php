@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Models\Vendor;
+use App\Mail\OrderMail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Vendor;
+use App\Mail\VendorStatus;
+use Illuminate\Support\Facades\Mail;
 
 class VendorController extends Controller
 {
@@ -122,7 +125,13 @@ class VendorController extends Controller
 
         $vendor = Vendor::findOrFail($id);
         $vendor->update($request->only('status'));
-
+        $strings = null;
+        if ($vendor->status == "A") {
+            $strings = "Active";
+        } elseif ($vendor->status == "In") {
+            $strings = "In-active";
+        }
+        Mail::to($vendor->user->email)->send(new VendorStatus($vendor, $strings));
         return ok('Vendor status updated Successfully', $vendor);
     }
 }

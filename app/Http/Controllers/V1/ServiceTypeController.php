@@ -26,12 +26,12 @@ class ServiceTypeController extends Controller
 
         $query = ServiceType::query();
 
-        /*sorting*/
+        /*search*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%");
         }
 
-        /*search*/
+        /*sorting*/
         if ($request->sort_field || $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
