@@ -27,7 +27,7 @@ class RestaurantController extends Controller
             'sort_field'        => 'nullable',
             'sort_order'        => 'nullable|in:asc,desc',
             'cousine_type_id.*' => 'nullable|exists:cousine_types,id',
-            'address'           => 'nullable|exists:restaurants,address2'
+            'address'           => 'nullable|exists:restaurants,address1'
         ]);
 
         $query = Restaurant::query();
@@ -43,12 +43,10 @@ class RestaurantController extends Controller
                 $query->whereIn('id', $request->cousine_type_id);
             });
         }
-        if ($request->address) {
-            $query->where('address2', 'like', "%$request->address%");
-        }
         /*search*/
         if ($request->search) {
-            $query = $query->where('name', 'like', "%$request->search%");
+            $query = $query->where('name', 'like', "%$request->search%")
+                ->orWhere('address1', 'like', "%$request->search%");
         }
 
         /*sorting*/
@@ -198,14 +196,14 @@ class RestaurantController extends Controller
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
     /**
-     * API of get perticuler restaurant details with their vendor  staff
+     * API of get perticuler restaurant details with their vendor staff,users,vendor & services
      *
      * @param  $id
      * @return  json $restaurant
      */
     public function data($id)
     {
-        $restaurant = Restaurant::with(['users:id,role_id,first_name,email,phone,address1', 'cousines:id,name', 'orders.service:id,name', 'orders.vendor.user:id,role_id,first_name,email,phone,address1'])->findOrFail($id);
+        $restaurant = Restaurant::where('id', $id)->with(['cousines:id,name', 'users:id,role_id,first_name,email,phone,address1', 'orders.vendor.user:id,role_id,first_name,email,phone,address1', 'orders.vendor.services:id,name'])->get();
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
     /**
@@ -217,7 +215,7 @@ class RestaurantController extends Controller
     public function delete($id)
     {
         $restaurant = Restaurant::findOrFail($id);
-        if ($restaurant->users()->count() > 0 && $restaurant->pictures()->count() > 0 && $restaurant->cousines()->count() > 0) {
+        if ($restaurant->users()->count() > 0 && $restaurant->pictures()->count() > 0 && $restaurant->cousines()->count() > 0 && $restaurant->stocks()->count()) {
             $restaurant->users()->detach();
             $restaurant->cousines()->detach();
             $restaurant->pictures()->delete();

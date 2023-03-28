@@ -96,10 +96,8 @@ class OrderController extends Controller
         ]);
         $vendor = Vendor::where('id', $request->vendor_id)->first();
         $user = $vendor->user()->first();
-        // dd($user->email);
         if ($vendor->status == 'A') {
             $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'quantity'));
-            // dd($order->id);
             Mail::to($user->email)->send(new OrderMail($order));
             return ok('Order created successfully!', $order);
         } else {

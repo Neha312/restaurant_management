@@ -12,7 +12,7 @@ use App\Http\Controllers\V1\ServiceTypeController;
 use App\Http\Controllers\V1\VendorStaffController;
 use App\Http\Controllers\V1\RestaurantBillController;
 use App\Http\Controllers\V1\RestaurantStockController;
-use App\Http\Controllers\V1\RestaurantPictureController;
+
 
 /*
 |--------------------------------------------------------------------------
