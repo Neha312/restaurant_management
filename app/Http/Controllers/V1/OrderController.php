@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers\V1;
 
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Order;
+use App\Mail\BillMail;
 use App\Models\Vendor;
 use App\Mail\OrderMail;
 use Illuminate\Http\Request;
+use App\Models\RestaurantBill;
+use App\Models\RestaurantUser;
 use App\Models\RestaurantBillTrail;
 use App\Http\Controllers\Controller;
+use App\Mail\OrderCancel;
+use Illuminate\Support\Facades\Mail;
 use App\Notifications\BillPaidSuccess;
 use App\Notifications\OrderStatusUpdated;
-use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -102,6 +108,73 @@ class OrderController extends Controller
             return ok('Order created successfully!', $order);
         } else {
             return 'This Vendor is In-active';
+        }
+    }
+    /**
+     * API of order Approve
+     *
+     * @param  $id
+     * @return json $order
+     */
+    public function approve(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        $stock = $order->vendor->stocks->first();
+        $stockType = $stock->stockType;
+        $restaurant = $order->restaurant;
+        $due_date = Carbon::now()->addDays(6)->format('Y-m-d');
+        $total_amount = $stock->first()->price * $order->quantity + $stock->first()->tax;
+        if ($order->status == 'R') {
+            return ('This Order is already reject');
+        }
+        if ($order->status == 'A') {
+            return ('This Order is already accepted');
+        } else {
+            $order->update(['status' => 'A']);
+        }
+        $bill  = RestaurantBill::create([
+            'order_id'              => $order->id,
+            'restaurant_id'         => $restaurant->id,
+            'vendor_id'             => $order->vendor->id,
+            'order_id'              => $order->id,
+            'stock_type_id'         => $stockType->id,
+            'tax'                   => $stock->first()->tax,
+            'due_date'              => $due_date,
+            'total_amount'          => $total_amount
+        ]);
+        $trail = RestaurantBillTrail::create(['status' => "PN", 'restaurant_bill_id' => 70]);
+        $bill->trails()->save($trail);
+        //send mail
+        $restaurant = $bill->restaurant;
+        $owner = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+        $user = User::where('id', $owner->user_id)->first();
+        Mail::to($user->email)->send(new BillMail($bill));
+
+        return ok('Bill Generatedn Successfully.!');
+    }
+    /**
+     * API of order reject
+     *
+     * @param  $id
+     * @return json $order
+     */
+    public function reject($id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->status == 'A') {
+            return ('This Order is already Placed');
+        }
+        if ($order->status == 'R') {
+            return ('This Order is already rejected');
+        } else {
+            $order->update(['status' => 'R']);
+            $order->save();
+            $restaurant = $order->restaurant;
+            $owner = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+            $user = User::where('id', $owner->user_id)->first();
+            Mail::to($user->email)->send(new OrderCancel($order, $user));
+            return ok('This order is rejected.');
         }
     }
     /**

@@ -11,9 +11,14 @@ class StockType extends BaseModel
         'id',
         'name',
     ];
-    /* Stock belongs to restuarant stock Relationship */
+    /* Stock type has many restuarant stock Relationship */
     public function resStocks()
     {
         return $this->hasMany(RestaurantStock::class, 'stock_type_id');
+    }
+    /* Stock type has many restuarant stock Relationship */
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class, 'stock_type_id');
     }
 }

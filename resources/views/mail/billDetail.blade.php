@@ -24,6 +24,7 @@
 
 <body>
     <p>Hello..{{ $bill->restaurant->users->first()->first_name }}</p>
+    <p>Bill Details</p>
     <table style="width:100%">
         <tr>
             <th>Order Id</th>

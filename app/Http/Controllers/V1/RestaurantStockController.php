@@ -116,7 +116,7 @@ class RestaurantStockController extends Controller
      */
     public function get($id)
     {
-        $stock = RestaurantStock::with(['restaurant', 'stock'])->findOrFail($id);
+        $stock = RestaurantStock::findOrFail($id);
 
         return ok('Restaurant stock retrieved successfully', $stock);
     }

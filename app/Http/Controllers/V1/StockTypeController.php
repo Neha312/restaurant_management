@@ -98,7 +98,7 @@ class StockTypeController extends Controller
      */
     public function get($id)
     {
-        $stock = StockType::with('resStocks')->findOrFail($id);
+        $stock = StockType::with('stocks')->findOrFail($id);
 
         return ok('Stock type retrieved successfully', $stock);
     }
@@ -112,8 +112,9 @@ class StockTypeController extends Controller
     public function delete($id)
     {
         $stock = StockType::findOrFail($id);
-        if ($stock->resStocks()->count() > 0) {
+        if ($stock->resStocks()->count() > 0 && $stock->stocks()->count() > 0) {
             $stock->resStocks()->delete();
+            $stock->stocks()->delete();
         }
         $stock->delete();
 

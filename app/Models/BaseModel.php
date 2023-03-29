@@ -12,10 +12,10 @@ class BaseModel extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = auth()->user()->id;
+            $model->created_by = auth()->user() ? auth()->user()->id : User::where('role_id', 1)->first()->id ?? null;
         });
         static::updating(function ($model) {
-            $model->updated_by = auth()->user()->id;
+            $model->updated_by = auth()->user() ? auth()->user()->id : User::where('role_id', 1)->first()->id ?? null;
         });
     }
 }

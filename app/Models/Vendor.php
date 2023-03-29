@@ -41,4 +41,9 @@ class Vendor extends BaseModel
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    /* Vendor has many stock Relationship */
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class, 'vendor_id');
+    }
 }

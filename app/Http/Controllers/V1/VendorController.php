@@ -88,7 +88,7 @@ class VendorController extends Controller
      */
     public function get($id)
     {
-        $vendor = Vendor::with(['user', 'services', 'staffs'])->findOrFail($id);
+        $vendor = Vendor::with(['user:id,first_name,last_name,email,address1', 'services:id,name', 'staffs:id,vendor_id,first_name,last_name,phone'])->findOrFail($id);
 
         return ok('Vendor retrieved successfully', $vendor);
     }
@@ -102,8 +102,7 @@ class VendorController extends Controller
     public function delete($id)
     {
         $vendor = Vendor::findOrFail($id);
-        if ($vendor->services()->count() > 0) {
-            $vendor->services()->detach();
+        if ($vendor->staff()->count() > 0) {
             $vendor->staffs()->delete();
         }
         $vendor->delete();

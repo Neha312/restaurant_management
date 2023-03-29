@@ -43,6 +43,7 @@ class RestaurantController extends Controller
                 $query->whereIn('id', $request->cousine_type_id);
             });
         }
+
         /*search*/
         if ($request->search) {
             $query = $query->where('name', 'like', "%$request->search%")
@@ -191,7 +192,7 @@ class RestaurantController extends Controller
      */
     public function get($id)
     {
-        $restaurant = Restaurant::with(['users', 'cousines', 'pictures', 'orders', 'stocks'])->findOrFail($id);
+        $restaurant = Restaurant::with(['users:id,first_name,last_name,email,address1', 'cousines:id,name', 'pictures', 'orders', 'stocks'])->findOrFail($id);
 
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
