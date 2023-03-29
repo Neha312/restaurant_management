@@ -111,12 +111,7 @@ class CousineTypeController extends Controller
      */
     public function delete($id)
     {
-        $cousine = CousineType::findOrFail($id);
-        if ($cousine->restaurants()->count() > 0) {
-            $cousine->restaurants()->detach();
-        }
-        $cousine->delete();
-
+        CousineType::findOrFail($id)->delete();
         return ok('Cousine type deleted successfully');
     }
 }

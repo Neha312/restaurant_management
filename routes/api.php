@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\UserController;
 use App\Http\Controllers\V1\OrderController;
+use App\Http\Controllers\V1\StockController;
 use App\Http\Controllers\V1\VendorController;
 use App\Http\Controllers\V1\StockTypeController;
 use App\Http\Controllers\V1\RestaurantController;
@@ -29,6 +30,10 @@ Route::prefix('v1')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgetPassword', [AuthController::class, 'forgetPassword']);
     Route::post('resetPassword/{token}', [AuthController::class, 'resetPassword']);
+
+    Route::get('approve/{id}', [OrderController::class, 'approve'])->name('vendor.approve');
+    Route::get('reject/{id}', [OrderController::class, 'reject'])->name('vendor.reject');
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::post('changePassword', [AuthController::class, 'changePassword']);
@@ -45,6 +50,13 @@ Route::prefix('v1')->group(function () {
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
             Route::post('update/{id}', 'update')->middleware('check:Admin');
             Route::post('delete/{id}', 'delete')->middleware('check:Admin');
+        });
+        Route::controller(StockController::class)->prefix('stock')->group(function () {
+            Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
+            Route::post('create', 'create')->middleware('check:Vendor');
+            Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
+            Route::post('update/{id}', 'update')->middleware('check:Vendor');
+            Route::post('delete/{id}', 'delete')->middleware('check:Vendor');
         });
         Route::controller(UserController::class)->prefix('user')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
@@ -83,7 +95,7 @@ Route::prefix('v1')->group(function () {
             Route::post('update/{id}', 'update')->middleware('check:Vendor');
             Route::post('delete/{id}', 'delete')->middleware('check:Vendor');
         });
-        Route::controller(RestaurantStockController::class)->prefix('stock')->group(function () {
+        Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager');
             Route::post('create', 'create')->middleware('check:Admin|Owner|Manager');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager');
@@ -99,7 +111,6 @@ Route::prefix('v1')->group(function () {
         });
         Route::controller(RestaurantBillController::class)->prefix('bill')->group(function () {
             Route::post('list',  'list')->middleware('check:Admin|Owner|Manager|Vendor');
-            Route::post('create', 'create')->middleware('check:Vendor');
             Route::get('get/{id}',  'get')->middleware('check:Admin|Owner|Manager|Vendor');
         });
     });

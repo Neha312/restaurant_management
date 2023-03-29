@@ -26,6 +26,10 @@ class Order extends BaseModel
                 return 'Dispatch';
             case 'D':
                 return 'Delivered';
+            case 'A':
+                return 'Accept';
+            case 'R':
+                return 'Reject';
             default:
                 return $this->status;
         }

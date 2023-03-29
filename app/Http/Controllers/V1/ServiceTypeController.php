@@ -99,7 +99,7 @@ class ServiceTypeController extends Controller
      */
     public function get($id)
     {
-        $service = ServiceType::with('vendors')->findOrFail($id);
+        $service = ServiceType::findOrFail($id);
 
         return ok('Service type retrieved successfully', $service);
     }
@@ -112,11 +112,7 @@ class ServiceTypeController extends Controller
      */
     public function delete($id)
     {
-        $service = ServiceType::findOrFail($id);
-        if ($service->vendors()->count() > 0) {
-            $service->vendors()->detach();
-        }
-        $service->delete();
+        ServiceType::findOrFail($id)->delete();
 
         return ok('Service type deleted successfully');
     }

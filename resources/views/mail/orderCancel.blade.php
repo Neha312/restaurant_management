@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Order Detail Mail</title>
+    <title>Order cancale Mail</title>
     <style>
         table {
             border-collapse: collapse;
@@ -23,13 +23,15 @@
 </head>
 
 <body>
-    <p>Hello..{{ $order->vendor->user->first_name }}</p>
+    <p>Hello..{{ $order->restaurant->users->first()->first_name }}</p>
+    <p>Order cancale by {{ $order->vendor->user->first_name }}</p>
     <table style="width:100%">
         <tr>
             <th>Order Id</th>
             <th>Restaurant Name</th>
             <th>Service Type</th>
             <th>Quantity</th>
+
         </tr>
         <tr>
             <td>{{ $order->id }}</td>
@@ -38,9 +40,6 @@
             <td>{{ $order->quantity }}</td>
         </tr>
     </table>
-    <br>
-    <a href="{{ route('vendor.approve', $order->id) }}"><button class="button button1">Approve</button></a>
-    <a href="{{ route('vendor.reject', $order->id) }}"><button class="button button2">Reject</button></a>
     <p>Thank You</p>
 </body>
 
