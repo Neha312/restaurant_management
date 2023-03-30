@@ -8,12 +8,13 @@ use App\Models\Order;
 use App\Mail\BillMail;
 use App\Models\Vendor;
 use App\Mail\OrderMail;
+use App\Mail\OrderCancel;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\RestaurantBill;
 use App\Models\RestaurantUser;
 use App\Models\RestaurantBillTrail;
 use App\Http\Controllers\Controller;
-use App\Mail\OrderCancel;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\BillPaidSuccess;
 use App\Notifications\OrderStatusUpdated;
@@ -98,12 +99,14 @@ class OrderController extends Controller
             'restaurant_id'      => 'required|integer|exists:restaurants,id',
             'vendor_id'          => 'required|integer|exists:vendors,id',
             'service_type_id'    => 'required|integer|exists:service_types,id',
-            'quantity'           => 'required|numeric'
+            'stock_id'           => 'required|integer|exists:stocks,id',
+            'quantity'           => 'required|numeric',
+            'order_number'       => 'string'
         ]);
         $vendor = Vendor::where('id', $request->vendor_id)->first();
         $user = $vendor->user()->first();
         if ($vendor->status == 'A') {
-            $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'quantity'));
+            $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'stock_id', 'quantity') + ['order_number' => Str::random(6)]);
             Mail::to($user->email)->send(new OrderMail($order));
             return ok('Order created successfully!', $order);
         } else {
@@ -116,14 +119,14 @@ class OrderController extends Controller
      * @param  $id
      * @return json $order
      */
-    public function approve(Request $request, $id)
+    public function approve($id)
     {
         $order = Order::findOrFail($id);
-        $stock = $order->vendor->stocks->first();
+        $stock = $order->stock;
         $stockType = $stock->stockType;
         $restaurant = $order->restaurant;
         $due_date = Carbon::now()->addDays(6)->format('Y-m-d');
-        $total_amount = $stock->first()->price * $order->quantity + $stock->first()->tax;
+        $total_amount = $stock->price * $order->quantity + $stock->tax;
         if ($order->status == 'R') {
             return ('This Order is already reject');
         }
@@ -138,11 +141,11 @@ class OrderController extends Controller
             'vendor_id'             => $order->vendor->id,
             'order_id'              => $order->id,
             'stock_type_id'         => $stockType->id,
-            'tax'                   => $stock->first()->tax,
+            'tax'                   => $stock->tax,
             'due_date'              => $due_date,
             'total_amount'          => $total_amount
-        ]);
-        $trail = RestaurantBillTrail::create(['status' => "PN", 'restaurant_bill_id' => 70]);
+        ] + ['bill_number' => Str::random(6)]);
+        $trail = RestaurantBillTrail::create(['status' => "PN"]);
         $bill->trails()->save($trail);
         //send mail
         $restaurant = $bill->restaurant;
@@ -150,7 +153,7 @@ class OrderController extends Controller
         $user = User::where('id', $owner->user_id)->first();
         Mail::to($user->email)->send(new BillMail($bill));
 
-        return ok('Bill Generatedn Successfully.!');
+        return ok('Bill Generated Successfully.!');
     }
     /**
      * API of order reject
@@ -190,18 +193,6 @@ class OrderController extends Controller
         return ok('Order retrieved successfully', $order);
     }
     /**
-     * API of Delete Order
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $id
-     */
-    public function delete($id)
-    {
-        Order::findOrFail($id)->delete();
-
-        return ok('Order deleted successfully');
-    }
-    /**
      * API of Order status
      *
      * @param  \Illuminate\Http\Request  $request
@@ -211,18 +202,46 @@ class OrderController extends Controller
     public function status($id, Request $request)
     {
         $this->validate($request, [
-            'status'   => 'required|in:DP,D',
+            'status'   => 'required|in:DP,D,A,R',
         ]);
         $order = Order::findOrFail($id);
         $order->update($request->only('status'));
-        $bill = $order->bill;
-        $trail = $bill->id;
-        if ($request->status == "D") {
-            $trails = RestaurantBillTrail::create(['status' => "P"] + ['restaurant_bill_id' => $trail]);
-            $bill->vendor->user->notify(new BillPaidSuccess($trails, $order, $bill));
-        }
-        $bill->restaurant->users->first()->notify(new OrderStatusUpdated($order, $bill));
 
-        return ok('Order status updated Successfully', ['Order' => $order, 'Trail' => $trails]);
+        if ($order->status == "A") {
+            $due_date = Carbon::now()->addDays(6)->format('Y-m-d');
+            $total_amount = $order->stock->price * $order->quantity + $order->stock->tax;
+            $bill  = RestaurantBill::create([
+                'order_id'              => $order->id,
+                'restaurant_id'         => $order->restaurant->id,
+                'vendor_id'             => $order->vendor->id,
+                'order_id'              => $order->id,
+                'stock_type_id'         => $order->stock->stockType->id,
+                'tax'                   => $order->stock->tax,
+                'due_date'              => $due_date,
+                'total_amount'          => $total_amount
+            ] + ['bill_number' => Str::random(6)]);
+            $trail = RestaurantBillTrail::create(['status' => "PN"]);
+            $bill->trails()->save($trail);
+            //send mail
+            $restaurant = $bill->restaurant;
+            $owner = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+            $user = User::where('id', $owner->user_id)->first();
+            Mail::to($user->email)->send(new BillMail($bill));
+            return ok('Bill Generated Successfully.!');
+        } elseif ($order->status == "R") {
+            $restaurant = $order->restaurant;
+            $owner = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+            $user = User::where('id', $owner->user_id)->first();
+            Mail::to($user->email)->send(new OrderCancel($order, $user));
+            return ok('This order is rejected.');
+        } elseif ($order->status == "D") {
+            $id = $order->bill->id;
+            $trails = RestaurantBillTrail::create(['status' => "P"] + ['restaurant_bill_id' => $order->bill->id]);
+            $order->bill->vendor->user->notify(new BillPaidSuccess($trails, $order, $order->bill));
+            $order->bill->restaurant->users->first()->notify(new OrderStatusUpdated($order, $order->bill));
+            return ok('Order Delivered Successfully', ['Order' => $order]);
+        } else {
+            return ok('This order is Dispatch.');
+        }
     }
 }

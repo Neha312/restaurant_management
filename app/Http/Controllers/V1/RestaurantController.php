@@ -93,11 +93,11 @@ class RestaurantController extends Controller
             'logo'                          => 'required|mimes:jpg,jpeg,png,bmp,tiff',
             'type'                          => 'required|in:M,O',
             'picture.*'                     => 'required|mimes:jpg,jpeg,png,bmp,tiff',
-            'stocks.*'                      => 'required|array',
-            'stocks.*.stock_type_id'        => 'required|integer|exists:stock_types,id',
-            'stocks.*.name'                 => 'required|string|max:20',
-            'stocks.*.available_quantity'   => 'required|numeric',
-            'stocks.*.minimum_quantity'     => 'required|numeric',
+            'resStocks.*'                   => 'required|array',
+            'resStocks*.stock_type_id'      => 'required|integer|exists:stock_types,id',
+            'resStocks.*.name'              => 'required|string|max:20',
+            'resStocks.*.available_quantity' => 'required|numeric',
+            'resStocks.*.minimum_quantity'  => 'required|numeric',
 
         ]);
 
@@ -124,8 +124,8 @@ class RestaurantController extends Controller
             $restaurant->users()->syncWithoutDetaching([$request->user_id => ['is_owner' => true]]);
             $restaurant->cousines()->syncWithoutDetaching($request->cousine_type_id);
             $restaurant->pictures()->createMany($image);
-            $restaurant->stocks()->createMany($request->stocks);
-            return ok('Restaurant created successfully!',  $restaurant->load('users', 'pictures', 'cousines', 'stocks'));
+            $restaurant->resStocks()->createMany($request->resStocks);
+            return ok('Restaurant created successfully!',  $restaurant->load('users', 'pictures', 'cousines', 'resStocks'));
         }
         return 'Restaurant can not created!';
     }
@@ -192,7 +192,7 @@ class RestaurantController extends Controller
      */
     public function get($id)
     {
-        $restaurant = Restaurant::with(['users:id,first_name,last_name,email,address1', 'cousines:id,name', 'pictures', 'orders', 'stocks'])->findOrFail($id);
+        $restaurant = Restaurant::with(['users:id,first_name,last_name,email,address1', 'cousines:id,name', 'pictures', 'orders', 'resStocks'])->findOrFail($id);
 
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
@@ -216,11 +216,11 @@ class RestaurantController extends Controller
     public function delete($id)
     {
         $restaurant = Restaurant::findOrFail($id);
-        if ($restaurant->users()->count() > 0 && $restaurant->pictures()->count() > 0 && $restaurant->cousines()->count() > 0 && $restaurant->stocks()->count()) {
+        if ($restaurant->users()->count() > 0 && $restaurant->pictures()->count() > 0 && $restaurant->cousines()->count() > 0 && $restaurant->resStocks()->count()) {
             $restaurant->users()->detach();
             $restaurant->cousines()->detach();
             $restaurant->pictures()->delete();
-            $restaurant->stocks()->delete();
+            $restaurant->resStocks()->delete();
         }
         $restaurant->delete();
         return ok('Restaurant deleted successfully');

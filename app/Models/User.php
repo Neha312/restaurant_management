@@ -34,6 +34,10 @@ class User extends Authenticatable
         'created_by',
         'updated_by'
     ];
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
     /* User belongs to roles Relationship */
     public function role()
     {
