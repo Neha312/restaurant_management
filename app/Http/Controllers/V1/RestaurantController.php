@@ -83,21 +83,21 @@ class RestaurantController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'user_id'                       => 'required|integer|exists:users,id',
-            'cousine_type_id.*'             => 'required|integer|exists:cousine_types,id',
-            'name'                          => 'required|string|max:20',
-            'address1'                      => 'required|string|max:50',
-            'address2'                      => 'nullable|string|max:50',
-            'zip_code'                      => 'required|integer|min:6',
-            'phone'                         => 'required|integer|min:10',
-            'logo'                          => 'required|mimes:jpg,jpeg,png,bmp,tiff',
-            'type'                          => 'required|in:M,O',
-            'picture.*'                     => 'required|mimes:jpg,jpeg,png,bmp,tiff',
-            'resStocks.*'                   => 'required|array',
-            'resStocks*.stock_type_id'      => 'required|integer|exists:stock_types,id',
-            'resStocks.*.name'              => 'required|string|max:20',
-            'resStocks.*.available_quantity' => 'required|numeric',
-            'resStocks.*.minimum_quantity'  => 'required|numeric',
+            'cousine_type_id.*'                 => 'required|integer|exists:cousine_types,id',
+            'name'                              => 'required|string|max:20',
+            'address1'                          => 'required|string|max:50',
+            'address2'                          => 'nullable|string|max:50',
+            'user_id'                           => 'required|integer|exists:users,id',
+            'zip_code'                          => 'required|integer|min:6',
+            'phone'                             => 'required|integer|min:10',
+            'logo'                              => 'required|mimes:jpg,jpeg,png,bmp,tiff',
+            'type'                              => 'required|in:M,O',
+            'picture.*'                         => 'required|mimes:jpg,jpeg,png,bmp,tiff',
+            'resStocks.*'                       => 'required|array',
+            'resStocks*.stock_type_id'          => 'required|integer|exists:stock_types,id',
+            'resStocks.*.name'                  => 'required|string|max:20',
+            'resStocks.*.available_quantity'    => 'required|numeric',
+            'resStocks.*.minimum_quantity'      => 'required|numeric',
 
         ]);
 
@@ -161,7 +161,7 @@ class RestaurantController extends Controller
         $restaurant->update($request->only('name', 'address1', 'address2', 'phone', 'zip_code') + ['logo' => $imageName]);
         $restaurant->cousines()->sync($request->cousine_type_id);
 
-        $picture = RestaurantPicture::findOrFail($id);
+        $picture = RestaurantPicture::where('restaurant_id', $restaurant->id)->first();
         if ($picture->picture) {
             $image = array();
             if ($request->hasFile('picture')) {
