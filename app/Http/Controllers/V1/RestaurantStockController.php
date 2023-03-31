@@ -28,12 +28,6 @@ class RestaurantStockController extends Controller
         ]);
 
         $query = RestaurantStock::query();
-        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
-            $query->whereHas('restaurant.users', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
-
         /*filter*/
         if ($request->stock_type_id && count($request->stock_type_id) > 0) {
             $query->whereHas('stock', function ($query) use ($request) {
@@ -47,16 +41,16 @@ class RestaurantStockController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */
@@ -85,9 +79,9 @@ class RestaurantStockController extends Controller
             'stocks.*.available_quantity'   => 'required|numeric',
             'stocks.*.minimum_quantity'     => 'required|numeric',
         ]);
-        $stockIds = array_column($request->stocks, 'stock_type_id');
-        $restaurant = Restaurant::findOrFail($id);
-        $restaurant_id = RestaurantStock::where('restaurant_id', $restaurant->id)->whereNotIn('stock_type_id',  $stockIds);
+        $stockIds        = array_column($request->stocks, 'stock_type_id');
+        $restaurant      = Restaurant::findOrFail($id);
+        $restaurant_id   = RestaurantStock::where('restaurant_id', $restaurant->id)->whereNotIn('stock_type_id',  $stockIds);
         if ($restaurant_id->count() > 0) {
             $restaurant_id->delete();
         }
@@ -116,7 +110,7 @@ class RestaurantStockController extends Controller
      */
     public function get($id)
     {
-        $stock = RestaurantStock::findOrFail($id);
+        $stock = RestaurantStock::with('stock')->findOrFail($id);
 
         return ok('Restaurant stock retrieved successfully', $stock);
     }

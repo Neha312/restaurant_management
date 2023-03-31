@@ -7,7 +7,6 @@ use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Models\RestaurantPicture;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class RestaurantController extends Controller
@@ -51,16 +50,16 @@ class RestaurantController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */
@@ -101,11 +100,14 @@ class RestaurantController extends Controller
 
         ]);
 
-        $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();
-        $request->logo->storeAs("public/pictures", $imageName);
-
+        //create restaurant
+        if ($request->hasFile('logo')) {
+            $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();
+            $request->logo->storeAs("public/pictures", $imageName);
+        }
         $user = User::findOrFail($request->user_id);
 
+        //create restaurant picture
         $image = array();
         if ($request->hasFile('picture')) {
             foreach ($request->picture as $file) {
@@ -119,6 +121,7 @@ class RestaurantController extends Controller
                 ];
             }
         }
+        //create restaurant
         if ($user->role->name == "Owner") {
             $restaurant = Restaurant::create($request->only('name', 'address1', 'address2', 'phone', 'zip_code') + ['logo' => $imageName]);
             $restaurant->users()->syncWithoutDetaching([$request->user_id => ['is_owner' => true]]);
@@ -152,8 +155,9 @@ class RestaurantController extends Controller
             'picture.*'           => 'nullable|mimes:jpg,jpeg,png,bmp,tiff'
         ]);
 
+        //update restaurant
         $restaurant = Restaurant::findOrFail($id);
-        if ($restaurant->logo) {
+        if ($request->hasFile('logo')) {
             Storage::delete("public/pictures/" . $restaurant->logo);
             $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();
             $request->logo->storeAs("public/pictures", $imageName);
@@ -161,6 +165,7 @@ class RestaurantController extends Controller
         $restaurant->update($request->only('name', 'address1', 'address2', 'phone', 'zip_code') + ['logo' => $imageName]);
         $restaurant->cousines()->sync($request->cousine_type_id);
 
+        //update restaurant picture
         $picture = RestaurantPicture::where('restaurant_id', $restaurant->id)->first();
         if ($picture->picture) {
             $image = array();
@@ -168,7 +173,7 @@ class RestaurantController extends Controller
                 Storage::delete("public/pictures/" . $picture->picture);
                 $restaurant->pictures()->delete();
                 foreach ($request->picture as $file) {
-                    $image_name =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
+                    $image_name  =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
                     $upload_path =  'public/pictures';
                     $file->storeAs($upload_path, $image_name);
                     $image[] = [
@@ -204,7 +209,7 @@ class RestaurantController extends Controller
      */
     public function data($id)
     {
-        $restaurant = Restaurant::where('id', $id)->with(['cousines:id,name', 'users:id,role_id,first_name,email,phone,address1', 'orders.vendor.user:id,role_id,first_name,email,phone,address1', 'orders.vendor.services:id,name'])->get();
+        $restaurant = Restaurant::with(['cousines:id,name', 'users:id,role_id,first_name,email,phone,address1', 'orders.vendor.user:id,role_id,first_name,email,phone,address1', 'orders.vendor.services:id,name'])->findOrFail($id);
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
     /**
@@ -216,7 +221,7 @@ class RestaurantController extends Controller
     public function delete($id)
     {
         $restaurant = Restaurant::findOrFail($id);
-        if ($restaurant->users()->count() > 0 && $restaurant->pictures()->count() > 0 && $restaurant->cousines()->count() > 0 && $restaurant->resStocks()->count()) {
+        if ($restaurant->users()->count() > 0 || $restaurant->pictures()->count() > 0 || $restaurant->cousines()->count() > 0 || $restaurant->resStocks()->count()) {
             $restaurant->users()->detach();
             $restaurant->cousines()->detach();
             $restaurant->pictures()->delete();

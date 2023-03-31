@@ -16,7 +16,6 @@ class CheckAccess
     public function handle(Request $request, Closure $next, $roles): Response
     {
         $roles = explode('|', $roles);
-        // dd($roles);
         $flag = false;
         foreach ($roles as $role) {
             if ($role == auth()->user()->role->name) {
@@ -27,10 +26,5 @@ class CheckAccess
         if (!$flag) {
             return response()->json(['not access']);
         }
-        // if (auth()->user()->roles->name == "Admin" || auth()->user()->roles->name == "Owner" || auth()->user()->roles->name == "Manager") {
-        //     return $next($request);
-        // } else {
-        //     return response()->json(['not access']);
-        // }
     }
 }

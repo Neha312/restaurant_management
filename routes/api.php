@@ -89,7 +89,6 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
@@ -118,7 +117,7 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(UserController::class)->prefix('user')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create')->withoutMiddleware('access:Owner');
+                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
@@ -137,19 +136,19 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(VendorController::class)->prefix('vendor')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
                 Route::post('status/{id}', 'status');
             });
+
             Route::controller(VendorStaffController::class)->prefix('staff')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
+
             Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
@@ -179,7 +178,7 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(UserController::class)->prefix('user')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create')->withoutMiddleware('access:Manager');
+                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
@@ -198,7 +197,6 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(VendorController::class)->prefix('vendor')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
@@ -210,7 +208,6 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
@@ -236,6 +233,7 @@ Route::prefix('v1')->group(function () {
             Route::controller(VendorController::class)->prefix('vendor')->group(function () {
                 Route::post('list',  'list')->middleware('access:Admin|Owner|Manager|Vendor');
                 Route::get('get/{id}',  'get')->middleware('access:Admin|Owner|Manager|Vendor');
+                Route::post('update/{id}', 'update');
             });
             Route::controller(VendorStaffController::class)->prefix('staff')->group(function () {
                 Route::post('list',  'list');

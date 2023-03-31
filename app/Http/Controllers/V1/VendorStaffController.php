@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Models\Vendor;
+
 use App\Models\VendorStaff;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+
 
 class VendorStaffController extends Controller
 {
@@ -27,11 +27,6 @@ class VendorStaffController extends Controller
         ]);
 
         $query = VendorStaff::query();
-        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
-            $query->whereHas('vendors.user', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
 
         /*search*/
         if ($request->search) {
@@ -39,16 +34,16 @@ class VendorStaffController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field &&  $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */
