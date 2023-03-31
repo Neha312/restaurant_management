@@ -155,7 +155,7 @@ class UserController extends Controller
      */
     public function get($id)
     {
-        $user = User::with(['role', 'restaurants'])->findOrFail($id);
+        $user = User::with(['role'])->findOrFail($id);
 
         return ok('User retrieved successfully', $user);
     }
