@@ -52,9 +52,9 @@ class UserController extends Controller
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */
@@ -97,27 +97,31 @@ class UserController extends Controller
         $role = Role::findOrFail($request->role_id);
         if ($request->role_id != auth()->user()->role_id) {
             if ($role->name != "Admin") {
+                //create owner
                 if ($role->name == "Owner") {
                     $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
                     return ok('Owner created successfully!', $user);
-                } elseif ($role->name == 'Manager' || $role->name == 'Chef' || $role->name == "Waiter" || $role->name == "Cashier") {
+                }
+                //create manager,chef,waiter & cashier
+                elseif ($role->name == 'Manager' || $role->name == 'Chef' || $role->name == "Waiter" || $role->name == "Cashier") {
                     $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
                     $user->restaurantUsers()->attach([$request->restaurant_id => ['is_owner' => false]]);
                     return ok('User created successfully!', $user->load('restaurantUsers'));
-                } elseif ($role->name  == "Vendor") {
-                    $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
+                }
+                //create vendor
+                elseif ($role->name  == "Vendor") {
+                    $user   = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
                     $vendor = Vendor::create($request->only(['user_id' => $user->id]));
                     $user->vendors()->save($vendor);
                     $vendor->services()->attach($request->service_type_id);
-
                     return ok('Vendor created successfully!', $user->load('vendors'));
                 } else
-                    return 'User can not created!';
+                    return ok('User can not created!');
             } else {
-                return 'Admin Cannot be created !';
+                return ok('Admin Cannot be created !');
             }
         } else {
-            return 'User Cannot be created !';
+            return ok('User Cannot be created !');
         }
     }
 
@@ -134,7 +138,6 @@ class UserController extends Controller
             'role_id'                   => 'nullable|integer|exists:roles,id',
             'first_name'                => 'required|string|max:20',
             'last_name'                 => 'required|string|max:20',
-            'email'                     => 'nullable|email',
             'joining_date'              => 'nullable|date',
             'ending_date'               => 'nullable|date|after:joining_date',
             'address1'                  => 'nullable|string|max:30',
@@ -146,7 +149,7 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($id);
-        $user->update($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code'));
+        $user->update($request->only('role_id', 'first_name', 'last_name', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code'));
 
         return ok('User updated successfully!', $user);
     }
@@ -159,7 +162,7 @@ class UserController extends Controller
      */
     public function get($id)
     {
-        $user = User::with(['role'])->findOrFail($id);
+        $user = User::with('role')->findOrFail($id);
 
         return ok('User retrieved successfully', $user);
     }

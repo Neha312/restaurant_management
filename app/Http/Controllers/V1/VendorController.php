@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Models\Vendor;
-use App\Mail\OrderMail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mail\VendorStatus;
@@ -29,7 +28,6 @@ class VendorController extends Controller
 
         $query = Vendor::query();
 
-
         /*search*/
         if ($request->search) {
             $query = $query->where('id', 'like', "%$request->search%");
@@ -43,9 +41,9 @@ class VendorController extends Controller
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */

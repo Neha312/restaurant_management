@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Models\Vendor;
+
 use App\Models\VendorStaff;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+
 
 class VendorStaffController extends Controller
 {
@@ -41,9 +41,9 @@ class VendorStaffController extends Controller
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */

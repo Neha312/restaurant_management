@@ -25,19 +25,17 @@ class StockController extends Controller
             'price'               => 'nullable|exists:stocks,price',
             'manufacture_date'    => 'nullable|exists:stocks,manufacture_date',
             'expired_date'        => 'nullable|exists:stocks,expired_date',
+            'is_available'        => 'nullable|exists:stocks,is_available',
         ]);
 
         $query = Stock::query();
 
         /*filter*/
-        if ($request->price) {
-            $query->where('price', $request->price);
-        }
-        if ($request->manufacture_date) {
-            $query->where('manufacture_date', $request->manufacture_date);
-        }
-        if ($request->expired_date) {
-            $query->where('expired_date', $request->expired_date);
+        if ($request->price || $request->manufacture_date || $request->expired_date || $request->is_available) {
+            $query->where('price', $request->price)
+                ->orWhere('is_available', $request->is_available)
+                ->orWhere('manufacture_date', $request->manufacture_date)
+                ->orWhere('expired_date', $request->expired_date);
         }
         /*search*/
         if ($request->search) {
@@ -52,9 +50,9 @@ class StockController extends Controller
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */
@@ -89,7 +87,7 @@ class StockController extends Controller
 
         $stock = Stock::create($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
 
-        return ok(null, $stock);
+        return ok('Stock created successfully!', $stock);
     }
 
     /**
