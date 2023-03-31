@@ -83,11 +83,10 @@ class StockController extends Controller
             'price'             => 'required|integer',
             'quantity'          => 'required|integer',
             'is_available'      => 'required|boolean',
-            'vendor_id'         => 'required|integer|exists:vendors,id',
             'stock_type_id'     => 'required|integer|exists:stock_types,id',
         ]);
 
-        $stock = Stock::create($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'vendor_id', 'stock_type_id'));
+        $stock = Stock::create($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
 
         return ok(null, $stock);
     }
@@ -107,12 +106,11 @@ class StockController extends Controller
             'price'             => 'required|integer',
             'quantity'          => 'required|integer',
             'is_available'      => 'required|boolean',
-            'vendor_id'         => 'required|integer|exists:vendors,id',
             'stock_type_id'     => 'required|integer|exists:stock_types,id',
         ]);
 
         $stock = Stock::findOrFail($id);
-        $stock->update($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'vendor_id', 'stock_type_id'));
+        $stock->update($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
 
         return ok('Stock updated successfully!', $stock);
     }

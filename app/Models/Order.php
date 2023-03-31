@@ -13,7 +13,10 @@ class Order extends BaseModel
         'restaurant_id',
         'vendor_id',
         'service_type_id',
+        'stock_id',
+        'order_number',
         'quantity',
+        'total_amount',
         'status'
     ];
     /* Accessors */
@@ -53,5 +56,10 @@ class Order extends BaseModel
     public function bill()
     {
         return $this->hasOne(RestaurantBill::class, 'order_id');
+    }
+    /* Order belong to stock Relationship */
+    public function stock()
+    {
+        return $this->belongsTo(Stock::class, 'stock_id');
     }
 }

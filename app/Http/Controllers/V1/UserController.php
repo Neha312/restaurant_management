@@ -5,7 +5,6 @@ namespace App\Http\Controllers\V1;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Restaurant;
 use App\Models\Role;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Hash;
@@ -131,7 +130,7 @@ class UserController extends Controller
             'role_id'                   => 'nullable|integer|exists:roles,id',
             'first_name'                => 'required|string|max:20',
             'last_name'                 => 'required|string|max:20',
-            'email'                     => 'nullable|email|unique:users,email',
+            'email'                     => 'nullable|email',
             'joining_date'              => 'nullable|date',
             'ending_date'               => 'nullable|date|after:joining_date',
             'address1'                  => 'nullable|string|max:30',
@@ -170,8 +169,12 @@ class UserController extends Controller
     public function delete($id)
     {
         $user = User::findOrFail($id);
-        if ($user->restaurantUsers()->count() > 0 && $user->vendors()->count() > 0) {
+        if ($user->restaurantUsers()->count() > 0 || $user->vendors()->count() > 0) {
             $user->restaurantUsers()->detach();
+            if ($user->vendors->first()->staffs > 0 || $user->vendors->first()->services > 0) {
+                $user->vendors->first()->staffs->delete();
+                $user->vendors->first()->services->detach();
+            }
             $user->vendors()->delete();
         }
         $user->delete();

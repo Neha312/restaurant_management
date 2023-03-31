@@ -102,8 +102,9 @@ class VendorController extends Controller
     public function delete($id)
     {
         $vendor = Vendor::findOrFail($id);
-        if ($vendor->staff()->count() > 0) {
+        if ($vendor->staff()->count() > 0 || $vendor->services()->count() > 0) {
             $vendor->staffs()->delete();
+            $vendor->services()->detach();
         }
         $vendor->delete();
 

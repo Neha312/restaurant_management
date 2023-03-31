@@ -11,6 +11,7 @@ class RestaurantBill extends BaseModel
 
     protected $fillable = [
         'id',
+        'bill_number',
         'restaurant_id',
         'order_id',
         'vendor_id',
@@ -35,9 +36,14 @@ class RestaurantBill extends BaseModel
     {
         return $this->belongsTo(Vendor::class, 'vendor_id');
     }
-    /* Restaurant has many  trail Relationship */
+    /* Restaurant bill has many  trail Relationship */
     public function trails()
     {
         return $this->hasMany(RestaurantBillTrail::class, 'restaurant_bill_id');
+    }
+    /* Restaurant bill belongs to order Relationship */
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
     }
 }

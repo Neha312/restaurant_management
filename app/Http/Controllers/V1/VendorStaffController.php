@@ -109,7 +109,7 @@ class VendorStaffController extends Controller
      */
     public function get($id)
     {
-        $vendor_staff = VendorStaff::with(['vendor'])->findOrFail($id);
+        $vendor_staff = VendorStaff::findOrFail($id);
 
         return ok('Vendor staff retrieved successfully', $vendor_staff);
     }

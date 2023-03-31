@@ -12,7 +12,6 @@ class Stock extends BaseModel
         'quantity',
         'price',
         'tax',
-        'vendor_id',
         'stock_type_id',
         'is_available',
         'manufacture_date',
@@ -23,9 +22,9 @@ class Stock extends BaseModel
     {
         return $this->belongsTo(StockType::class, 'stock_type_id');
     }
-    /* Stock belong to stock type Relationship */
-    public function vendor()
+    /* stock belong to order Relationship */
+    public function orders()
     {
-        return $this->belongsTo(Vendor::class, 'vendor_id');
+        return $this->hasMany(Order::class, 'stock_id');
     }
 }

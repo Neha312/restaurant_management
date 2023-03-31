@@ -27,14 +27,14 @@
     <p>Order cancale by {{ $order->vendor->user->first_name }}</p>
     <table style="width:100%">
         <tr>
-            <th>Order Id</th>
+            <th>Order Number</th>
             <th>Restaurant Name</th>
             <th>Service Type</th>
             <th>Quantity</th>
 
         </tr>
         <tr>
-            <td>{{ $order->id }}</td>
+            <td>{{ $order->order_number }}</td>
             <td>{{ $order->restaurant->name }}</td>
             <td>{{ $order->service->name }}</td>
             <td>{{ $order->quantity }}</td>

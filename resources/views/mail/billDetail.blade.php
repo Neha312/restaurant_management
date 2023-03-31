@@ -27,7 +27,8 @@
     <p>Bill Details</p>
     <table style="width:100%">
         <tr>
-            <th>Order Id</th>
+            <th>Bill Number</th>
+            <th>Order Number</th>
             <th>Restaurant Name</th>
             <th>Vendor Name</th>
             <th>Stock Type</th>
@@ -38,7 +39,8 @@
 
         </tr>
         <tr>
-            <td>{{ $bill->order_id }}</td>
+            <td>{{ $bill->bill_number }}</td>
+            <td>{{ $bill->order->order_number }}</td>
             <td>{{ $bill->restaurant->name }}</td>
             <td>{{ $bill->vendor->user->first_name }}</td>
             <td>{{ $bill->stock->name }}</td>

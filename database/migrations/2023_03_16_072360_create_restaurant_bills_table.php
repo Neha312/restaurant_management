@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('restaurant_bills', function (Blueprint $table) {
             $table->id();
+            $table->string('bill_number', 6)->unique();
+            $table->bigInteger('order_id')->unsigned()->nullable();
             $table->bigInteger('restaurant_id')->unsigned()->nullable();
             $table->bigInteger('vendor_id')->unsigned()->nullable();
             $table->bigInteger('stock_type_id')->unsigned()->nullable();
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->char('updated_by')->nullable();
             $table->char('deleted_by')->nullable();
 
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
             $table->foreign('stock_type_id')->references('id')->on('stock_types')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
