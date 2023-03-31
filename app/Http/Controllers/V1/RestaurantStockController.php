@@ -28,12 +28,6 @@ class RestaurantStockController extends Controller
         ]);
 
         $query = RestaurantStock::query();
-        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager") {
-            $query->whereHas('restaurant.users', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
-
         /*filter*/
         if ($request->stock_type_id && count($request->stock_type_id) > 0) {
             $query->whereHas('stock', function ($query) use ($request) {
@@ -47,7 +41,7 @@ class RestaurantStockController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 

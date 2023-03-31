@@ -28,11 +28,6 @@ class RestaurantBillController extends Controller
         ]);
 
         $query = RestaurantBill::query();
-        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
-            $query->whereHas('restaurant.users', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
 
         /*filter*/
         if ($request->restaurant_id) {
@@ -52,16 +47,16 @@ class RestaurantBillController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
         /* Pagination */
         $count = $query->count();
         if ($request->page && $request->perPage) {
-            $page = $request->page;
+            $page    = $request->page;
             $perPage = $request->perPage;
-            $query = $query->skip($perPage * ($page - 1))->take($perPage);
+            $query   = $query->skip($perPage * ($page - 1))->take($perPage);
         }
 
         /* Get records */

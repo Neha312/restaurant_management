@@ -27,11 +27,6 @@ class VendorStaffController extends Controller
         ]);
 
         $query = VendorStaff::query();
-        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
-            $query->whereHas('vendors.user', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
 
         /*search*/
         if ($request->search) {
@@ -39,7 +34,7 @@ class VendorStaffController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field &&  $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 

@@ -51,7 +51,7 @@ class RestaurantController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
@@ -204,7 +204,7 @@ class RestaurantController extends Controller
      */
     public function data($id)
     {
-        $restaurant = Restaurant::where('id', $id)->with(['cousines:id,name', 'users:id,role_id,first_name,email,phone,address1', 'orders.vendor.user:id,role_id,first_name,email,phone,address1', 'orders.vendor.services:id,name'])->get();
+        $restaurant = Restaurant::with(['cousines:id,name', 'users:id,role_id,first_name,email,phone,address1', 'orders.vendor.user:id,role_id,first_name,email,phone,address1', 'orders.vendor.services:id,name'])->findOrFail($id);
         return ok('Restaurant retrieved successfully',  $restaurant);
     }
     /**

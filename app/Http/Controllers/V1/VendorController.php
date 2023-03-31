@@ -28,19 +28,15 @@ class VendorController extends Controller
         ]);
 
         $query = Vendor::query();
-        if (auth()->user()->role->name == "Vendor") {
-            $query->whereHas('user', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
+
 
         /*search*/
         if ($request->search) {
-            $query = $query->where('legal_name', 'like', "%$request->search%");
+            $query = $query->where('id', 'like', "%$request->search%");
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
@@ -102,7 +98,7 @@ class VendorController extends Controller
     public function delete($id)
     {
         $vendor = Vendor::findOrFail($id);
-        if ($vendor->staff()->count() > 0 || $vendor->services()->count() > 0) {
+        if ($vendor->staffs()->count() > 0 || $vendor->services()->count() > 0) {
             $vendor->staffs()->delete();
             $vendor->services()->detach();
         }

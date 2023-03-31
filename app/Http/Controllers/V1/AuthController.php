@@ -32,14 +32,14 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return error("User with this email is not found!");
+            return error("User with this email is not found!", [], 'validation');
         }
         if (!Hash::check($request->password, $user->password)) {
-            return error("Incorrect Password!");
+            return error("Incorrect Password!", [], 'validation');
         }
         $role = array("Admin", "Owner", "Manager", "Vendor");
         if (!in_array($user->role->name, $role)) {
-            return error("Role does not match!");
+            return error("Role does not match!", [], 'validation');
         }
         $token = $user->createToken($request->email)->plainTextToken;
 
@@ -69,7 +69,7 @@ class AuthController extends Controller
         ]);
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return error('Email does not exists');
+            return error('Email does not exists', [], 'validation');
         }
         $token = Str::random(40);
         PasswordReset::create([
@@ -90,7 +90,7 @@ class AuthController extends Controller
         ]);
         $resetPassword = PasswordReset::where('token', $token)->first();
         if (!$resetPassword) {
-            return error('Token is invalid or expired');
+            return error('Token is invalid or expired', [], 'unauthenticated');
         }
         $user = User::where('email', $resetPassword->email)->first();
         $user->password = Hash::make($request->password);
@@ -105,12 +105,12 @@ class AuthController extends Controller
     {
         if (!(Hash::check($request->get('current-password'), Auth::user()->password))) {
             // The passwords matches
-            return  error("Your current password does not matches with the password.");
+            return  error("Your current password does not matches with the password.", [], 'validation');
         }
 
         if (strcmp($request->get('current-password'), $request->get('new-password')) == 0) {
             // Current password and new password same
-            return error("New Password cannot be same as your current password.");
+            return error("New Password cannot be same as your current password.", [], 'validation');
         }
 
         $request->validate([

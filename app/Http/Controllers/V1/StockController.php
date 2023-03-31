@@ -45,7 +45,7 @@ class StockController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
@@ -83,6 +83,7 @@ class StockController extends Controller
             'price'             => 'required|integer',
             'quantity'          => 'required|integer',
             'is_available'      => 'required|boolean',
+            'tax'               => 'required|numeric|between:0,99.99',
             'stock_type_id'     => 'required|integer|exists:stock_types,id',
         ]);
 
@@ -106,11 +107,12 @@ class StockController extends Controller
             'price'             => 'required|integer',
             'quantity'          => 'required|integer',
             'is_available'      => 'required|boolean',
+            'tax'               => 'required|numeric|between:0,99.99',
             'stock_type_id'     => 'required|integer|exists:stock_types,id',
         ]);
 
         $stock = Stock::findOrFail($id);
-        $stock->update($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
+        $stock->update($request->only('name', 'quantity', 'price', 'is_available', 'tax', 'manufacture_date', 'expired_date', 'stock_type_id'));
 
         return ok('Stock updated successfully!', $stock);
     }

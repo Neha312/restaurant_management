@@ -41,11 +41,6 @@ class OrderController extends Controller
         ]);
 
         $query = Order::query();
-        if (auth()->user()->role->name == "Owner" || auth()->user()->role->name == "Manager" || auth()->user()->role->name == "Vendor") {
-            $query->whereHas('vendor.user', function ($query) {
-                $query->where('id', auth()->id());
-            });
-        }
         /*filter*/
         if ($request->vendor_id) {
             $query->whereHas('vendor', function ($query) use ($request) {
@@ -64,7 +59,7 @@ class OrderController extends Controller
         }
 
         /*sorting*/
-        if ($request->sort_field || $request->sort_order) {
+        if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
         }
 
