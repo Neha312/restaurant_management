@@ -189,9 +189,7 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(RestaurantController::class)->prefix('restaurant')->group(function () {
                 Route::post('list',  'list');
-                Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
-                Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
                 Route::get('data/{id}', 'data');
             });
@@ -231,8 +229,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('delete/{id}', 'delete');
             });
             Route::controller(VendorController::class)->prefix('vendor')->group(function () {
-                Route::post('list',  'list')->middleware('access:Admin|Owner|Manager|Vendor');
-                Route::get('get/{id}',  'get')->middleware('access:Admin|Owner|Manager|Vendor');
+                Route::post('list',  'list');
+                Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
             });
             Route::controller(VendorStaffController::class)->prefix('staff')->group(function () {

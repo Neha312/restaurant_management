@@ -256,7 +256,7 @@ class OrderController extends Controller
             $order->bill->restaurant->users->first()->notify(new OrderStatusUpdated($order, $order->bill));
             return ok('Order Delivered Successfully', ['Order' => $order]);
         }
-        //order dispatch
+        //when status is order dispatch
         else {
             return ok('This order is Dispatch.');
         }

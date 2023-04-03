@@ -22,7 +22,7 @@ class Stock extends BaseModel
     {
         return $this->belongsTo(StockType::class, 'stock_type_id');
     }
-    /* stock belong to order Relationship */
+    /* stock has many order Relationship */
     public function orders()
     {
         return $this->hasMany(Order::class, 'stock_id');

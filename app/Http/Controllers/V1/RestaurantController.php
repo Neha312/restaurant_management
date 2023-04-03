@@ -143,7 +143,7 @@ class RestaurantController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'user_id.*'           => 'nullable|integer|exists:users,id',
+            'user_id'             => 'nullable|integer|exists:users,id',
             'cousine_type_id.*'   => 'nullable|integer|exists:cousine_types,id',
             'name'                => 'required|string|max:20',
             'address1'            => 'nullable|string|max:50',
@@ -157,6 +157,7 @@ class RestaurantController extends Controller
 
         //update restaurant
         $restaurant = Restaurant::findOrFail($id);
+        $imageName = $restaurant->logo;
         if ($request->hasFile('logo')) {
             Storage::delete("public/pictures/" . $restaurant->logo);
             $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();

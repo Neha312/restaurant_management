@@ -81,12 +81,13 @@ class RestaurantStockController extends Controller
         ]);
         $stockIds        = array_column($request->stocks, 'stock_type_id');
         $restaurant      = Restaurant::findOrFail($id);
-        $restaurant_id   = RestaurantStock::where('restaurant_id', $restaurant->id)->whereNotIn('stock_type_id',  $stockIds);
+        $restaurant_id   = $restaurant->resStocks()->where('restaurant_id', $restaurant->id)->whereNotIn('stock_type_id',  $stockIds);
         if ($restaurant_id->count() > 0) {
             $restaurant_id->delete();
         }
+        //update multiple restaurant stock
         foreach ($request['stocks'] as $stock) {
-            RestaurantStock::updateOrCreate(
+            $restaurant->resStocks()->updateOrCreate(
                 [
                     'restaurant_id' => $restaurant->id,
                     'stock_type_id' => $stock['stock_type_id']

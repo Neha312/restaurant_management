@@ -116,7 +116,7 @@ class StockController extends Controller
     }
 
     /**
-     * API of get perticuler Stock type details
+     * API of get perticuler Stock  details
      *
      * @param  $id
      * @return json $stock

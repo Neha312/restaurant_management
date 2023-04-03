@@ -176,10 +176,15 @@ class UserController extends Controller
     public function delete($id)
     {
         $user = User::findOrFail($id);
-        $user->vendors()->first()->staffs()->delete();
-        $user->vendors()->delete();
-        if ($user->restaurantUsers()->count() > 0) {
-            $user->restaurantUsers()->detach();
+        if ($user->role->name == "Vendor") {
+            if ($user->vendors()->first()->staffs()->count() > 0) {
+                $user->vendors()->first()->staffs()->delete();
+            }
+            $user->vendors()->delete();
+        } else {
+            if ($user->restaurantUsers()->count() > 0) {
+                $user->restaurantUsers()->detach();
+            }
         }
         $user->delete();
         return ok('User deleted successfully');
