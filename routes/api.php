@@ -46,7 +46,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('update/{id}', 'update');
                 Route::post('delete/{id}', 'delete');
             });
-            Route::controller(StockTypeController::class)->prefix('stock_type')->group(function () {
+            Route::controller(StockTypeController::class)->prefix('stock-type')->group(function () {
                 Route::post('list',  'list');
                 Route::post('create', 'create');
                 Route::get('get/{id}',  'get');
@@ -87,7 +87,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
-            Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
+            Route::controller(RestaurantStockController::class)->prefix('rest-stock')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
@@ -107,7 +107,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
-            Route::controller(StockTypeController::class)->prefix('stock_type')->group(function () {
+            Route::controller(StockTypeController::class)->prefix('stock-type')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
@@ -147,7 +147,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('get/{id}',  'get');
             });
 
-            Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
+            Route::controller(RestaurantStockController::class)->prefix('rest-stock')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');
@@ -168,7 +168,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
-            Route::controller(StockTypeController::class)->prefix('stock_type')->group(function () {
+            Route::controller(StockTypeController::class)->prefix('stock-type')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
@@ -204,7 +204,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
             });
-            Route::controller(RestaurantStockController::class)->prefix('rest_stock')->group(function () {
+            Route::controller(RestaurantStockController::class)->prefix('rest-stock')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
                 Route::post('update/{id}', 'update');

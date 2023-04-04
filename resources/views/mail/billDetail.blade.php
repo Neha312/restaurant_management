@@ -32,7 +32,8 @@
             <th>Restaurant Name</th>
             <th>Vendor Name</th>
             <th>Stock Type</th>
-            <th>Total Amount</th>
+            <th>Quantity</th>
+            {{-- <th></th> --}}
             <th>Tax</th>
             <th>Due Date</th>
 
@@ -44,12 +45,12 @@
             <td>{{ $bill->restaurant->name }}</td>
             <td>{{ $bill->vendor->user->first_name }}</td>
             <td>{{ $bill->stock->name }}</td>
-            <td>{{ $bill->total_amount }}</td>
+            <td>{{ $bill->order->quantity }}</td>
             <td>{{ $bill->tax }}</td>
             <td>{{ $bill->due_date }}</td>
-
         </tr>
     </table>
+    <h3 align="right" margin-right=30px>Total Amount:{{ $bill->total_amount }}</h3>
     <p>Thank You</p>
 </body>
 

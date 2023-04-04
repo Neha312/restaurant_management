@@ -37,7 +37,9 @@
             <td>{{ $order->service->name }}</td>
             <td>{{ $order->quantity }}</td>
         </tr>
+
     </table>
+    <h3 align="right">Total Amount:{{ $total_amount }}</h3>
     <br>
     <a href="{{ route('vendor.approve', $order->id) }}"><button class="button button1">Approve</button></a>
     <a href="{{ route('vendor.reject', $order->id) }}"><button class="button button2">Reject</button></a>

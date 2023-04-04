@@ -85,7 +85,7 @@ class StockController extends Controller
             'stock_type_id'     => 'required|integer|exists:stock_types,id',
         ]);
 
-        $stock = Stock::create($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
+        $stock = Stock::create($request->only('name', 'quantity', 'price', 'tax', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
 
         return ok('Stock created successfully!', $stock);
     }

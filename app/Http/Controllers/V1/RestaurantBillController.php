@@ -43,7 +43,7 @@ class RestaurantBillController extends Controller
 
         /*search*/
         if ($request->search) {
-            $query = $query->where('id', 'like', "%$request->search%");
+            $query = $query->where('bill_number', 'like', "%$request->search%");
         }
 
         /*sorting*/

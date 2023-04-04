@@ -152,7 +152,9 @@ class RestaurantController extends Controller
             'phone'               => 'nullable|integer|min:10',
             'logo'                => 'required|mimes:jpg,jpeg,png,bmp,tiff',
             'type'                => 'nullable|in:M,O',
-            'picture.*'           => 'nullable|mimes:jpg,jpeg,png,bmp,tiff'
+            'picture.*'           => 'nullable|mimes:jpg,jpeg,png,bmp,tiff',
+            'picture_id.*'        => 'nullable|integer|exists:restaurant_pictures,id',
+
         ]);
 
         //update restaurant
@@ -166,27 +168,27 @@ class RestaurantController extends Controller
         $restaurant->update($request->only('name', 'address1', 'address2', 'phone', 'zip_code') + ['logo' => $imageName]);
         $restaurant->cousines()->sync($request->cousine_type_id);
 
-        //update restaurant picture
-        $picture = RestaurantPicture::where('restaurant_id', $restaurant->id)->first();
-        if ($picture->picture) {
-            $image = array();
-            if ($request->hasFile('picture')) {
-                Storage::delete("public/pictures/" . $picture->picture);
-                $restaurant->pictures()->delete();
-                foreach ($request->picture as $file) {
-                    $image_name  =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
-                    $upload_path =  'public/pictures';
-                    $file->storeAs($upload_path, $image_name);
-                    $image[] = [
-                        'restaurant_id' => $request->id,
-                        'picture' => $image_name,
-                        'type' => $request->type
-                    ];
-                }
+
+        $picDeleteIds = $request->picture_id;
+        $result = $restaurant->pictures()->whereIn('id', $picDeleteIds);
+        if ($result->count() > 0) {
+            $result->delete();
+        }
+        //update multiple restaurant stock
+        if ($request->hasFile('picture')) {
+            Storage::delete("public/pictures/" . $restaurant->pictures->first()->picture);
+            foreach ($request['picture'] as $pic) {
+                $image_name  =  str_replace(".", "", (string)microtime(true)) . '.' . $pic->getClientOriginalExtension();
+                $upload_path =  'public/pictures';
+                $pic->storeAs($upload_path, $image_name);
+                $restaurant->pictures()->create(
+                    [
+                        'restaurant_id' => $restaurant->id,
+                        'picture' => $image_name
+                    ],
+                );
             }
         }
-
-        $restaurant->pictures()->createMany($image);
         return ok('Restaurant updated successfully!', $restaurant->load('cousines', 'pictures'));
     }
 

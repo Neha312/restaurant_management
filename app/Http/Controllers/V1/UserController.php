@@ -96,24 +96,24 @@ class UserController extends Controller
         ]);
         $role = Role::findOrFail($request->role_id);
         if ($request->role_id != auth()->user()->role_id) {
+            $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
             if ($role->name != "Admin") {
                 //create owner
                 if ($role->name == "Owner") {
-                    $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
+                    $user;
                     return ok('Owner created successfully!', $user);
                 }
                 //create manager,chef,waiter & cashier
                 elseif ($role->name == 'Manager' || $role->name == 'Chef' || $role->name == "Waiter" || $role->name == "Cashier") {
-                    $user = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
+                    $user;
                     $user->restaurantUsers()->attach([$request->restaurant_id => ['is_owner' => false]]);
                     return ok('User created successfully!', $user->load('restaurantUsers'));
                 }
                 //create vendor
                 elseif ($role->name  == "Vendor") {
-                    $user   = User::create($request->only('role_id', 'first_name', 'last_name', 'email', 'joining_date', 'ending_date', 'address1', 'address2', 'phone', 'total_leave', 'used_leave', 'zip_code') + ['password' => Hash::make($request->password)]);
-                    $vendor = Vendor::create($request->only(['user_id' => $user->id]));
-                    $user->vendors()->save($vendor);
-                    $vendor->services()->attach($request->service_type_id);
+                    $user;
+                    $user->vendors()->create(['user_id' => $user->id]);
+                    $user->vendors()->first()->services()->attach($request->service_type_id);
                     return ok('Vendor created successfully!', $user->load('vendors'));
                 } else
                     return ok('User can not created!');
