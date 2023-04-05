@@ -78,24 +78,32 @@ class RestaurantStockController extends Controller
             'stocks.*.name'                 => 'required|string|max:20',
             'stocks.*.available_quantity'   => 'required|numeric',
             'stocks.*.minimum_quantity'     => 'required|numeric',
+            'remove_id.*'                   => 'nullable|integer|exists:restaurant_stocks,id',
         ]);
-        $stockIds        = array_column($request->stocks, 'stock_type_id');
-        $restaurant      = Restaurant::findOrFail($id);
-        $restaurant_id   = $restaurant->resStocks()->where('restaurant_id', $restaurant->id)->whereNotIn('stock_type_id',  $stockIds);
-        if ($restaurant_id->count() > 0) {
-            $restaurant_id->delete();
-        }
+
         //update multiple restaurant stock
-        foreach ($request['stocks'] as $stock) {
-            $restaurant->resStocks()->updateOrCreate(
+        $restaurant      = Restaurant::findOrFail($id);
+        /* delete stock */
+        if ($request->remove_id) {
+            $stock_ids = RestaurantStock::findOrFail($request->remove_id);
+            foreach ($stock_ids as $stock) {
+                if ($stock->count() > 0) {
+                    $stock->delete();
+                }
+            }
+        }
+
+        //update mutliple create
+        foreach ($request['stocks'] as $stocks) {
+            RestaurantStock::updateOrCreate(
                 [
                     'restaurant_id' => $restaurant->id,
-                    'stock_type_id' => $stock['stock_type_id']
+                    'stock_type_id' => $stocks['stock_type_id']
                 ],
                 [
-                    'name'               => $stock['name'],
-                    'available_quantity' => $stock['available_quantity'],
-                    'minimum_quantity'   => $stock['minimum_quantity'],
+                    'name'               => $stocks['name'],
+                    'available_quantity' => $stocks['available_quantity'],
+                    'minimum_quantity'   => $stocks['minimum_quantity'],
 
                 ]
             );

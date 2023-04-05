@@ -33,7 +33,6 @@
             <th>Vendor Name</th>
             <th>Stock Type</th>
             <th>Quantity</th>
-            {{-- <th></th> --}}
             <th>Tax</th>
             <th>Due Date</th>
 
@@ -51,7 +50,10 @@
         </tr>
     </table>
     <h3 align="right" margin-right=30px>Total Amount:{{ $bill->total_amount }}</h3>
+    <a href="{{ route('bill.download', $bill->id) }}"><button class="button button1">Download</button></a>
     <p>Thank You</p>
+
+
 </body>
 
 </html>

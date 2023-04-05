@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
-use App\Models\Vendor;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller

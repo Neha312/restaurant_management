@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Notifications\BillPaidSuccess;
 use App\Notifications\OrderStatusUpdated;
 
+
 class OrderController extends Controller
 {
     /**
@@ -56,7 +57,8 @@ class OrderController extends Controller
 
         /*search*/
         if ($request->search) {
-            $query = $query->where('order_number', 'like', "%$request->search%");
+            $query = $query->where('order_number', 'like', "%$request->search%")
+                ->orWhere('status', 'like', "%$request->search%");
         }
 
         /*sorting*/
@@ -108,7 +110,9 @@ class OrderController extends Controller
             if ($vendor->status == 'A') {
                 //create order
                 $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'stock_id', 'quantity') + ['order_number' => Str::random(6)]);
-                $total_amount = ($order->stock->price + $order->stock->tax) * $request->quantity;
+                $tax = ($order->stock->price * $order->stock->tax) / 100;
+                $total_amount = ($order->stock->price + $tax) * $request->quantity;
+
                 $data = [
                     'order'        => $order,
                     'total_amount' => $total_amount
@@ -116,9 +120,8 @@ class OrderController extends Controller
                 //send mail
                 Mail::to($vendor->user()->first()->email)->send(new OrderMail($order, $total_amount));
                 return ok('Order created successfully!', $data);
-            } else {
-                return ok('This Vendor is In-active');
             }
+            return ok('This Vendor is In-active');
         }
         return ok("This restaurant not belongs to authenticated user..!");
     }
@@ -135,7 +138,8 @@ class OrderController extends Controller
         $stockType    = $stock->stockType;
         $restaurant   = $order->restaurant;
         $due_date     = Carbon::now()->addDays(6)->format('Y-m-d');
-        $total_amount = $stock->price * $order->quantity + $stock->tax;
+        $tax = ($stock->price * $stock->tax) / 100;
+        $total_amount = ($stock->price + $tax) * $order->quantity;
         if ($order->status == 'R') {
             return ok('This Order is already reject');
         }
@@ -184,7 +188,6 @@ class OrderController extends Controller
         } else {
             //update status
             $order->update(['status' => 'R']);
-            $order->save();
             //send mail
             $restaurant_id = $order->restaurant->id;
             $owner         = RestaurantUser::where('restaurant_id', $restaurant_id)->where('is_owner', true)->first();
@@ -223,7 +226,8 @@ class OrderController extends Controller
         //when order status is accepted
         if ($order->status == "A") {
             $due_date     = Carbon::now()->addDays(6)->format('Y-m-d');
-            $total_amount = $order->stock->price * $order->quantity + $order->stock->tax;
+            $tax = ($order->stock->price * $order->stock->tax) / 100;
+            $total_amount = ($order->stock->price + $tax) * $order->quantity;
             //generate bill
             $bill  = RestaurantBill::create(
                 [
@@ -243,7 +247,6 @@ class OrderController extends Controller
             //send mail
             $restaurant_id = $bill->restaurant->id;
             $owner         = RestaurantUser::where('restaurant_id', $restaurant_id)->where('is_owner', true)->first();
-            dd($owner);
             $user          = User::where('id', $owner->user_id)->first();
             Mail::to($user->email)->send(new BillMail($bill));
             return ok('Bill Generated Successfully.!');
@@ -265,7 +268,7 @@ class OrderController extends Controller
             //send notification
             $order->bill->vendor->user->notify(new BillPaidSuccess($trails, $order, $order->bill));
             $order->bill->restaurant->users->first()->notify(new OrderStatusUpdated($order, $order->bill));
-            return ok('Order Delivered Successfully', ['Order' => $order]);
+            return ok('Order Delivered Successfully', ['order' => $order]);
         }
         //when status is order dispatch
         else {

@@ -32,7 +32,7 @@ class StockController extends Controller
 
         /*filter*/
         if ($request->price || $request->manufacture_date || $request->expired_date || $request->is_available) {
-            $query->where('price', $request->price)
+            $query->where('price', '>', $request->price)
                 ->orWhere('is_available', $request->is_available)
                 ->orWhere('manufacture_date', $request->manufacture_date)
                 ->orWhere('expired_date', $request->expired_date);
