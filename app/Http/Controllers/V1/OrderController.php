@@ -94,11 +94,11 @@ class OrderController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'restaurant_id'      => 'required|integer|exists:restaurants,id',
-            'vendor_id'          => 'required|integer|exists:vendors,id',
-            'service_type_id'    => 'required|integer|exists:service_types,id',
-            'stock_id'           => 'required|integer|exists:stocks,id',
-            'quantity'           => 'required|numeric',
+            'restaurant_id.*'    => 'required|integer|exists:restaurants,id',
+            'vendor_id.*'        => 'required|integer|exists:vendors,id',
+            'service_type_id.*'  => 'required|integer|exists:service_types,id',
+            'stock_id.*'         => 'required|integer|exists:stocks,id',
+            'quantity.*'         => 'required|numeric',
             'order_number'       => 'string|unique:orders,order_number'
         ]);
 
@@ -110,15 +110,21 @@ class OrderController extends Controller
             if ($vendor->status == 'A') {
                 //create order
                 $order = Order::create($request->only('restaurant_id', 'vendor_id', 'service_type_id', 'stock_id', 'quantity') + ['order_number' => Str::random(6)]);
+                //manage quantity
+                if ($order->stock->quantity < $request->quantity) {
+                    return ('Product out of stock');
+                }
+                $quantity = $order->stock->quantity - $request->quantity;
+                $order->stock->update(['quantity' => $quantity]);
+                //calculte tax
                 $tax = ($order->stock->price * $order->stock->tax) / 100;
                 $total_amount = ($order->stock->price + $tax) * $request->quantity;
-
                 $data = [
                     'order'        => $order,
                     'total_amount' => $total_amount
                 ];
                 //send mail
-                Mail::to($vendor->user()->first()->email)->send(new OrderMail($order, $total_amount));
+                // Mail::to($vendor->user()->first()->email)->send(new OrderMail($order, $total_amount));
                 return ok('Order created successfully!', $data);
             }
             return ok('This Vendor is In-active');
