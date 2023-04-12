@@ -141,7 +141,7 @@ class OrderController extends Controller
                     // send mail
                     $vendors = $order_item->stock->created_by;
                     $user = User::findOrFail($vendors);
-                    Mail::to($user->email)->send(new OrderMail($order_create, $order_item, $user));
+                    // Mail::to($user->email)->send(new OrderMail($order_create, $order_item, $user));
                     //calculate tax & total amount
                     $tax = ($order_item->price * $stock->tax) / 100;
                     $total_amount += ($order_item->price + $tax) * $order_item->quantity;
