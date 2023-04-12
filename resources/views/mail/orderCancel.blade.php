@@ -23,8 +23,8 @@
 </head>
 
 <body>
-    <p>Hello..{{ $order->restaurant->users->first()->first_name }}</p>
-    <p>Order cancale by {{ $order->vendor->user->first_name }}</p>
+    <p>Hello..{{ $order_item->first()->restaurant->users->first()->first_name }}</p>
+    <p>Order cancale by {{ $order_item->first()->vendor->user->first_name }}</p>
     <table style="width:100%">
         <tr>
             <th>Order Number</th>
@@ -34,10 +34,10 @@
 
         </tr>
         <tr>
-            <td>{{ $order->order_number }}</td>
-            <td>{{ $order->restaurant->name }}</td>
-            <td>{{ $order->service->name }}</td>
-            <td>{{ $order->quantity }}</td>
+            <td>{{ $order_item->order->order_number }}</td>
+            <td>{{ $order_item->restaurant->name }}</td>
+            <td>{{ $order_item->service->name }}</td>
+            <td>{{ $order_item->quantity }}</td>
         </tr>
     </table>
     <p>Thank You</p>

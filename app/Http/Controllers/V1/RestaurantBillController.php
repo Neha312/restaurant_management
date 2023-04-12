@@ -94,9 +94,9 @@ class RestaurantBillController extends Controller
     {
         $bill           = RestaurantBill::findOrFail($id);
         $order          = $bill->order;
-        $stock          = $order->stock;
+        $stock          = $order->orderItem->first()->stock;
         $restaurant     = $bill->restaurant;
-        $vendor_id      = $order->vendor->user_id;
+        $vendor_id      = $order->orderItem->first()->vendor->user_id;
         $owner          = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
         $user           = User::where('id', $owner->user_id)->first();
         $vendor         = User::where('id', $vendor_id)->first();

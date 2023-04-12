@@ -12,14 +12,15 @@ use Illuminate\Queue\SerializesModels;
 class OrderMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $order, $total_amount;
+    public $order_create, $order_item, $user;
     /**
      * Create a new message instance.
      */
-    public function __construct($order, $total_amount)
+    public function __construct($order_create, $order_item, $user)
     {
-        $this->order        = $order;
-        $this->total_amount = $total_amount;
+        $this->order_create = $order_create;
+        $this->order_item  = $order_item;
+        $this->user = $user;
     }
 
     /**

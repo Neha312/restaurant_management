@@ -46,7 +46,7 @@ class BillPaidSuccess extends Notification
             ->line('Order Number:' . $this->order->order_number)
             ->line('Bill Number:' . $this->bill->bill_number)
             ->line('Owner Name:' . $this->bill->restaurant->users->first()->first_name)
-            ->line('Restaurant Name:' . $this->order->restaurant->name)
+            ->line('Restaurant Name:' . $this->order->orderItem->first()->restaurant->name)
             ->line('Total Amount:' . $this->order->bill->total_amount)
             ->line('Bill status:' . $status)
             ->line('Best regards!');

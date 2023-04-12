@@ -47,7 +47,7 @@ class OrderStatusUpdated extends Notification
             ->line('Order Number:' . $this->order->order_number)
             ->line('Bill Number:' . $this->bill->bill_number)
             ->line('Vendor Name:' . $this->bill->vendor->user->first_name)
-            ->line('Restaurant Name:' . $this->order->restaurant->name)
+            ->line('Restaurant Name:' . $this->order->orderItem->first()->restaurant->name)
             ->line('Total Amount:' . $this->order->bill->total_amount)
             ->line('Tax:' . $this->order->bill->tax)
             ->line('Quantity:' . $this->order->quantity)

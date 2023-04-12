@@ -247,6 +247,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('list',  'list');
                 Route::get('get/{id}',  'get');
                 Route::post('status/{id}', 'status');
+                Route::post('OrderStatus/{id}', 'OrderStatus');
             });
             Route::controller(RestaurantBillController::class)->prefix('bill')->group(function () {
                 Route::post('list',  'list');
