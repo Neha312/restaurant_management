@@ -28,11 +28,6 @@ class VendorController extends Controller
 
         $query = Vendor::query();
 
-        /*search*/
-        if ($request->search) {
-            $query = $query->where('id', 'like', "%$request->search%");
-        }
-
         /*sorting*/
         if ($request->sort_field && $request->sort_order) {
             $query = $query->orderBy($request->sort_field, $request->sort_order);
@@ -117,15 +112,17 @@ class VendorController extends Controller
             'status'   => 'required|in:A,In',
         ]);
 
+        //update status of vendor
         $vendor = Vendor::findOrFail($id);
         $vendor->update($request->only('status'));
-        $strings = null;
+        $status = null;
         if ($vendor->status == "A") {
-            $strings = "Active";
+            $status = "Active";
         } elseif ($vendor->status == "In") {
-            $strings = "In-active";
+            $status = "In-active";
         }
-        Mail::to($vendor->user->email)->send(new VendorStatus($vendor, $strings));
+        //send mail
+        Mail::to($vendor->user->email)->send(new VendorStatus($vendor, $status));
         return ok('Vendor status updated Successfully', $vendor);
     }
 }

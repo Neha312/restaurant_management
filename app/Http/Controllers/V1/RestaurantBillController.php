@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\V1;
 
 
+use PDF;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\RestaurantBill;
+use App\Models\RestaurantUser;
 use App\Http\Controllers\Controller;
 
 class RestaurantBillController extends Controller
@@ -25,11 +28,17 @@ class RestaurantBillController extends Controller
             'sort_order'    => 'nullable|in:asc,desc',
             'restaurant_id' => 'nullable|exists:restaurants,id',
             'vendor_id'     => 'nullable|exists:vendors,id',
+            'total_amount'  => 'nullable',
+            'due_date'      => 'nullable|exists:restaurant_bills,due_date',
         ]);
 
         $query = RestaurantBill::query();
 
         /*filter*/
+        if ($request->total_amount) {
+            $query->where('total_amount', '>', $request->total_amount)
+                ->orWhere('due_date', $request->due_date);
+        }
         if ($request->restaurant_id) {
             $query->whereHas('restaurant', function ($query) use ($request) {
                 $query->where('id', $request->restaurant_id);
@@ -43,7 +52,7 @@ class RestaurantBillController extends Controller
 
         /*search*/
         if ($request->search) {
-            $query = $query->where('id', 'like', "%$request->search%");
+            $query = $query->where('bill_number', 'like', "%$request->search%");
         }
 
         /*sorting*/
@@ -80,5 +89,19 @@ class RestaurantBillController extends Controller
         $bill = RestaurantBill::with(['restaurant', 'stock', 'vendor', 'trails'])->findOrFail($id);
 
         return ok('Restaurant bill retrieved successfully', $bill);
+    }
+    public function Invoice($id)
+    {
+        $bill           = RestaurantBill::findOrFail($id);
+        $order          = $bill->order;
+        $stock          = $order->orderItem->first()->stock;
+        $restaurant     = $bill->restaurant;
+        $vendor_id      = $order->orderItem->first()->vendor->user_id;
+        $owner          = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+        $user           = User::where('id', $owner->user_id)->first();
+        $vendor         = User::where('id', $vendor_id)->first();
+        $pdf = PDF::loadView('invoicePdf', array('bill' => $bill, 'order' => $order, 'user' => $user, 'vendor' => $vendor, 'stock' => $stock));
+
+        return $pdf->download('invoice' . '-' . now()->format('Y-m-d') . '.pdf');
     }
 }

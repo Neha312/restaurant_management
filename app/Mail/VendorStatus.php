@@ -12,14 +12,14 @@ use Illuminate\Queue\SerializesModels;
 class VendorStatus extends Mailable
 {
     use Queueable, SerializesModels;
-    public $vendor, $strings;
+    public $vendor, $status;
     /**
      * Create a new message instance.
      */
-    public function __construct($vendor, $strings)
+    public function __construct($vendor, $status)
     {
-        $this->vendor = $vendor;
-        $this->strings = $strings;
+        $this->vendor  = $vendor;
+        $this->$status = $status;
     }
 
     /**

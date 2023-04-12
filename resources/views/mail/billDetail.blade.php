@@ -32,7 +32,7 @@
             <th>Restaurant Name</th>
             <th>Vendor Name</th>
             <th>Stock Type</th>
-            <th>Total Amount</th>
+            <th>Quantity</th>
             <th>Tax</th>
             <th>Due Date</th>
 
@@ -44,13 +44,15 @@
             <td>{{ $bill->restaurant->name }}</td>
             <td>{{ $bill->vendor->user->first_name }}</td>
             <td>{{ $bill->stock->name }}</td>
-            <td>{{ $bill->total_amount }}</td>
+            <td>{{ $bill->order->orderItem->first()->quantity }}</td>
             <td>{{ $bill->tax }}</td>
             <td>{{ $bill->due_date }}</td>
-
         </tr>
     </table>
+    <h3 align="right" margin-right=30px>Total Amount:{{ $bill->total_amount }}</h3>
+    <a href="{{ route('bill.download', $bill->id) }}"><button class="button button1">Download</button></a>
     <p>Thank You</p>
+
 </body>
 
 </html>

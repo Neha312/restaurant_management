@@ -103,7 +103,7 @@ class RestaurantController extends Controller
         //create restaurant
         if ($request->hasFile('logo')) {
             $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();
-            $request->logo->storeAs("public/pictures", $imageName);
+            $request->logo->storeAs("public/logo", $imageName);
         }
         $user = User::findOrFail($request->user_id);
 
@@ -143,7 +143,7 @@ class RestaurantController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'user_id.*'           => 'nullable|integer|exists:users,id',
+            'user_id'             => 'nullable|integer|exists:users,id',
             'cousine_type_id.*'   => 'nullable|integer|exists:cousine_types,id',
             'name'                => 'required|string|max:20',
             'address1'            => 'nullable|string|max:50',
@@ -152,40 +152,49 @@ class RestaurantController extends Controller
             'phone'               => 'nullable|integer|min:10',
             'logo'                => 'required|mimes:jpg,jpeg,png,bmp,tiff',
             'type'                => 'nullable|in:M,O',
-            'picture.*'           => 'nullable|mimes:jpg,jpeg,png,bmp,tiff'
+            'picture.*'           => 'nullable|mimes:jpg,jpeg,png,bmp,tiff',
+            'remove_id.*'         => 'nullable|integer|exists:restaurant_pictures,id',
+
         ]);
 
         //update restaurant
         $restaurant = Restaurant::findOrFail($id);
+        $imageName = $restaurant->logo;
         if ($request->hasFile('logo')) {
-            Storage::delete("public/pictures/" . $restaurant->logo);
+            Storage::delete("public/logo/" . $restaurant->logo);
             $imageName = str_replace(".", " ", (string)microtime(true)) . '.' . $request->logo->getClientOriginalExtension();
-            $request->logo->storeAs("public/pictures", $imageName);
+            $request->logo->storeAs("public/logo", $imageName);
         }
         $restaurant->update($request->only('name', 'address1', 'address2', 'phone', 'zip_code') + ['logo' => $imageName]);
         $restaurant->cousines()->sync($request->cousine_type_id);
 
-        //update restaurant picture
-        $picture = RestaurantPicture::where('restaurant_id', $restaurant->id)->first();
-        if ($picture->picture) {
-            $image = array();
-            if ($request->hasFile('picture')) {
-                Storage::delete("public/pictures/" . $picture->picture);
-                $restaurant->pictures()->delete();
-                foreach ($request->picture as $file) {
-                    $image_name  =  str_replace(".", "", (string)microtime(true)) . '.' . $file->getClientOriginalExtension();
-                    $upload_path =  'public/pictures';
-                    $file->storeAs($upload_path, $image_name);
-                    $image[] = [
-                        'restaurant_id' => $request->id,
-                        'picture' => $image_name,
-                        'type' => $request->type
-                    ];
+
+        //update multiple restaurant stock
+        /* delete image */
+        if ($request->remove_id) {
+            $images = RestaurantPicture::findOrFail($request->remove_id);
+            foreach ($images as $image) {
+                $image_path = 'public/pictures/' . $image->picture;
+                if (Storage::exists($image_path)) {
+                    Storage::delete($image_path);
                 }
+                $image->delete();
             }
         }
-
-        $restaurant->pictures()->createMany($image);
+        /* create multiple image */
+        if ($request->hasFile('picture')) {
+            foreach ($request['picture'] as $pic) {
+                $image_name  =  str_replace(".", "", (string)microtime(true)) . '.' . $pic->getClientOriginalExtension();
+                $upload_path =  'public/pictures';
+                $pic->storeAs($upload_path, $image_name);
+                $restaurant->pictures()->updateOrCreate(
+                    [
+                        'restaurant_id' => $restaurant->id,
+                        'picture'       => $image_name
+                    ],
+                );
+            }
+        }
         return ok('Restaurant updated successfully!', $restaurant->load('cousines', 'pictures'));
     }
 
@@ -207,7 +216,7 @@ class RestaurantController extends Controller
      * @param  $id
      * @return  json $restaurant
      */
-    public function data($id)
+    public function restaurantInfo($id)
     {
         $restaurant = Restaurant::with(['cousines:id,name', 'users:id,role_id,first_name,email,phone,address1', 'orders.vendor.user:id,role_id,first_name,email,phone,address1', 'orders.vendor.services:id,name'])->findOrFail($id);
         return ok('Restaurant retrieved successfully',  $restaurant);

@@ -30,7 +30,8 @@ class VendorStaffController extends Controller
 
         /*search*/
         if ($request->search) {
-            $query = $query->where('first_name', 'like', "%$request->search%");
+            $query = $query->where('first_name', 'like', "%$request->search%")
+                ->orWhere('last_name', 'like', "%$request->search%");
         }
 
         /*sorting*/

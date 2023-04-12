@@ -32,7 +32,7 @@ class StockController extends Controller
 
         /*filter*/
         if ($request->price || $request->manufacture_date || $request->expired_date || $request->is_available) {
-            $query->where('price', $request->price)
+            $query->where('price', '>', $request->price)
                 ->orWhere('is_available', $request->is_available)
                 ->orWhere('manufacture_date', $request->manufacture_date)
                 ->orWhere('expired_date', $request->expired_date);
@@ -85,7 +85,7 @@ class StockController extends Controller
             'stock_type_id'     => 'required|integer|exists:stock_types,id',
         ]);
 
-        $stock = Stock::create($request->only('name', 'quantity', 'price', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
+        $stock = Stock::create($request->only('name', 'quantity', 'price', 'tax', 'is_available', 'manufacture_date', 'expired_date', 'stock_type_id'));
 
         return ok('Stock created successfully!', $stock);
     }
@@ -116,7 +116,7 @@ class StockController extends Controller
     }
 
     /**
-     * API of get perticuler Stock type details
+     * API of get perticuler Stock  details
      *
      * @param  $id
      * @return json $stock

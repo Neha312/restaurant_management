@@ -23,24 +23,30 @@
 </head>
 
 <body>
-    <p>Hello..{{ $order->vendor->user->first_name }}</p>
+
+    <h3>Hello..{{ $user->first_name }}</h3>
+    <h3>Order Number:{{ $order_create->order_number }}</h3>
     <table style="width:100%">
         <tr>
-            <th>Order Number</th>
             <th>Restaurant Name</th>
             <th>Service Type</th>
             <th>Quantity</th>
         </tr>
         <tr>
-            <td>{{ $order->order_number }}</td>
-            <td>{{ $order->restaurant->name }}</td>
-            <td>{{ $order->service->name }}</td>
-            <td>{{ $order->quantity }}</td>
+            <td>{{ $order_item->restaurant->name }}</td>
+            <td>{{ $order_item->service->name }}</td>
+            <td>{{ $order_item->quantity }}</td>
         </tr>
     </table>
+    @php
+        $total_amount = 0;
+        $tax = ($order_item->price * $order_item->stock->tax) / 100;
+        $total_amount += ($order_item->price + $tax) * $order_item->quantity;
+    @endphp
+    <h3 align="right">Total Amount:{{ $total_amount }}</h3>
     <br>
-    <a href="{{ route('vendor.approve', $order->id) }}"><button class="button button1">Approve</button></a>
-    <a href="{{ route('vendor.reject', $order->id) }}"><button class="button button2">Reject</button></a>
+    <a href="{{ route('vendor.approve', $order_item->id) }}"><button class="button button1">Approve</button></a>
+    <a href="{{ route('vendor.reject', $order_item->id) }}"><button class="button button2">Reject</button></a>
     <p>Thank You</p>
 </body>
 

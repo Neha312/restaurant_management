@@ -22,7 +22,7 @@ class Restaurant extends BaseModel
     {
         return $this->belongsToMany(User::class, 'restaurant_users', 'restaurant_id', 'user_id')->withPivot('is_owner');
     }
-    /*Restaurant has many orders Relationship */
+    /* Restaurant has many orders Relationship */
     public function orders()
     {
         return $this->hasMany(Order::class, 'restaurant_id');

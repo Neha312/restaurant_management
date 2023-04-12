@@ -38,12 +38,12 @@ class User extends Authenticatable
         'password',
         'remember_token'
     ];
-    /* User belongs to roles Relationship */
+    /* User belongs to role Relationship */
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
-    /* User belongs to roles Relationship */
+    /* User has many restaurant Relationship */
     public function restaurants()
     {
         return $this->hasMany(Restaurant::class, 'user_id');

@@ -36,9 +36,9 @@ class BillPaidSuccess extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $strings = null;
+        $status = null;
         if ($this->trails->status == "P") {
-            $strings = "Paid";
+            $status  = "Paid";
         }
         return (new MailMessage)
             ->subject('Bill Status')
@@ -46,9 +46,9 @@ class BillPaidSuccess extends Notification
             ->line('Order Number:' . $this->order->order_number)
             ->line('Bill Number:' . $this->bill->bill_number)
             ->line('Owner Name:' . $this->bill->restaurant->users->first()->first_name)
-            ->line('Restaurant Name:' . $this->order->restaurant->name)
+            ->line('Restaurant Name:' . $this->order->orderItem->first()->restaurant->name)
             ->line('Total Amount:' . $this->order->bill->total_amount)
-            ->line('Bill status:' . $strings)
+            ->line('Bill status:' . $status)
             ->line('Best regards!');
     }
 

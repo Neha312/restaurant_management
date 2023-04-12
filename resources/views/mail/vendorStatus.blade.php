@@ -34,7 +34,7 @@
         <tr>
             <td>{{ $vendor->id }}</td>
             <td>{{ $vendor->user->first_name }}</td>
-            <td>{{ $strings }}</td>
+            <td>{{ $status }}</td>
         </tr>
     </table>
     <p>Thank You</p>
