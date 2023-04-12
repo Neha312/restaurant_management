@@ -115,7 +115,6 @@ class OrderController extends Controller
             $vendor = Vendor::where('id', $rest['vendor_id'])->first();
             if ($vendor->status == 'A') {
                 //create order
-                $ord = [];
                 foreach ($orders as $key => $order) {
                     $stock_id = $order['stock_id'];
                     $stock = Stock::findOrFail($stock_id);
@@ -127,7 +126,6 @@ class OrderController extends Controller
                     }
                     // $orders[$key]['quantity'] = $order['quantity'];
                     $orders[$key]['price'] = Stock::select('price')->where('id', $stock_id)->first()->price;
-                    array_push($ord, $order);
                 }
                 $order_create = Order::create($request->only('status') + ['order_number' => Str::random(6)]);
                 foreach ($orders as $item) {
@@ -138,7 +136,7 @@ class OrderController extends Controller
                         'service_type_id'   => $item['service_type_id'],
                         'stock_id'          => $item['stock_id'],
                         'quantity'          => $item['quantity'],
-                        'price'             =>   $item['price'],
+                        'price'             => $item['price'],
                     ]);
                     // send mail
                     $vendors = $order_item->stock->created_by;
