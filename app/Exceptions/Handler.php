@@ -45,26 +45,26 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        // $this->reportable(function (Throwable $e) {
-        //     // only create entries if app environment is not local
-        //     // if (!app()->environment('local')) {
-        //     $user_id = 0;
+        $this->reportable(function (Throwable $e) {
+            // only create entries if app environment is not local
+            // if (!app()->environment('local')) {
+            $user_id = 0;
 
-        //     if (Auth::user()) {
-        //         $user_id = Auth::user()->id;
-        //     }
+            if (Auth::user()) {
+                $user_id = Auth::user()->id;
+            }
 
-        //     $data = array(
-        //         'user_id'   => $user_id,
-        //         'code'      => $e->getCode(),
-        //         'file'      => $e->getFile(),
-        //         'line'      => $e->getLine(),
-        //         'message'   => $e->getMessage(),
-        //         'trace'     => $e->getTraceAsString(),
-        //     );
+            $data = array(
+                'user_id'   => $user_id,
+                'code'      => $e->getCode(),
+                'file'      => $e->getFile(),
+                'line'      => $e->getLine(),
+                'message'   => $e->getMessage(),
+                'trace'     => $e->getTraceAsString(),
+            );
 
-        //     Error::create($data);
-        //     // }
-        // });
+            Error::create($data);
+            // }
+        });
     }
 }
