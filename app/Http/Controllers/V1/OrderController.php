@@ -47,12 +47,12 @@ class OrderController extends Controller
         $query = Order::query();
         /*filter*/
         if ($request->vendor_id) {
-            $query->whereHas('vendor', function ($query) use ($request) {
+            $query->whereHas('orderItem.vendor', function ($query) use ($request) {
                 $query->where('id', $request->vendor_id);
             });
         }
         if ($request->restaurant_id) {
-            $query->whereHas('restaurant', function ($query) use ($request) {
+            $query->whereHas('orderItem.restaurant', function ($query) use ($request) {
                 $query->where('id', $request->restaurant_id);
             });
         }
@@ -86,7 +86,6 @@ class OrderController extends Controller
 
         return ok('Order list', $data);
     }
-
     /**
      * API of Create Order
      *
@@ -119,12 +118,11 @@ class OrderController extends Controller
                     $stock_id = $order['stock_id'];
                     $stock = Stock::findOrFail($stock_id);
                     //chech quanitty
-                    if ($orders[$key]['quantity'] == 0) {
+                    if ($stock->quantity == 0) {
                         return ok("Product out of stock");
                     } elseif ($order['quantity'] > $stock->quantity) {
                         return ok("Not enough product for stock" . " " . $order['stock_id']);
                     }
-                    // $orders[$key]['quantity'] = $order['quantity'];
                     $orders[$key]['price'] = Stock::select('price')->where('id', $stock_id)->first()->price;
                 }
                 $order_create = Order::create($request->only('status') + ['order_number' => Str::random(6)]);
@@ -141,8 +139,8 @@ class OrderController extends Controller
                     // send mail
                     $vendors = $order_item->stock->created_by;
                     $user = User::findOrFail($vendors);
-                    // Mail::to($user->email)->send(new OrderMail($order_create, $order_item, $user));
-                    //calculate tax & total amount
+                    Mail::to($user->email)->send(new OrderMail($order_create, $order_item, $user));
+                    // calculate tax & total amount
                     $tax = ($order_item->price * $stock->tax) / 100;
                     $total_amount += ($order_item->price + $tax) * $order_item->quantity;
                     //manage quantity
@@ -308,7 +306,7 @@ class OrderController extends Controller
         $order->update($request->only('status'));
         //when order status is Delivered
         if ($order->status == "D") {
-            //create bill trail
+            //create bill trailc
             $id     = $order->bill->id;
             $trails = RestaurantBillTrail::create(['status' => "P"] + ['restaurant_bill_id' => $id]);
             //send notification
