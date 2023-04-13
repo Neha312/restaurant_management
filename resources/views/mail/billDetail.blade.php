@@ -44,7 +44,7 @@
             <td>{{ $bill->restaurant->name }}</td>
             <td>{{ $bill->vendor->user->first_name }}</td>
             <td>{{ $bill->stock->name }}</td>
-            <td>{{ $bill->order->orderItem->first()->quantity }}</td>
+            <td>{{ $order_item->quantity }}</td>
             <td>{{ $bill->tax }}</td>
             <td>{{ $bill->due_date }}</td>
         </tr>

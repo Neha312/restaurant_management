@@ -155,7 +155,7 @@
             <tr align="center">
                 <td>{{ $stock->name }}</td>
                 <td>{{ '$' . $stock->price }}</td>
-                <td>{{ $order->quantity }}</td>
+                <td>{{ $order->orderItem->first()->quantity }}</td>
                 <td>{{ $bill->tax . '%' }}</td>
                 <td>{{ '$' . $bill->total_amount }}</td>
             </tr>
