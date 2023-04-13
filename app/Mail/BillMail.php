@@ -12,13 +12,14 @@ use Illuminate\Queue\SerializesModels;
 class BillMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $bill;
+    public $bill, $order_item;
     /**
      * Create a new message instance.
      */
-    public function __construct($bill)
+    public function __construct($bill, $order_item)
     {
         $this->bill = $bill;
+        $this->order_item = $order_item;
     }
 
     /**

@@ -33,20 +33,19 @@
             <th>Quantity</th>
         </tr>
         <tr>
-            <td>{{ $order_item->restaurant->name }}</td>
-            <td>{{ $order_item->service->name }}</td>
-            <td>{{ $order_item->quantity }}</td>
+            <td>{{ $item->restaurant->name }}</td>
+            <td>{{ $item->service->name }}</td>
+            <td>{{ $item->quantity }}</td>
         </tr>
     </table>
     @php
-        $total_amount = 0;
-        $tax = ($order_item->price * $order_item->stock->tax) / 100;
-        $total_amount += ($order_item->price + $tax) * $order_item->quantity;
+        $tax = ($item->price * $item->stock->tax) / 100;
+        $total_amount = ($item->price + $tax) * $item->quantity;
     @endphp
     <h3 align="right">Total Amount:{{ $total_amount }}</h3>
     <br>
-    <a href="{{ route('vendor.approve', $order_item->id) }}"><button class="button button1">Approve</button></a>
-    <a href="{{ route('vendor.reject', $order_item->id) }}"><button class="button button2">Reject</button></a>
+    <a href="{{ route('vendor.approve', $item->id) }}"><button class="button button1">Approve</button></a>
+    <a href="{{ route('vendor.reject', $item->id) }}"><button class="button button2">Reject</button></a>
     <p>Thank You</p>
 </body>
 

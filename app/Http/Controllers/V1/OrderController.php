@@ -106,57 +106,49 @@ class OrderController extends Controller
         ]);
         $user = auth()->user()->id;
         $orders = $request->orders;
-        foreach ($orders as $rest) {
-            $restaurant = Restaurant::findOrFail($rest['restaurant_id']);
-        }
-        $check_user = $restaurant->users()->where('id', $user)->first();
-        if ($check_user) {
-            $vendor = Vendor::where('id', $rest['vendor_id'])->first();
-            if ($vendor->status == 'A') {
-                //create order
-                foreach ($orders as $key => $order) {
-                    $stock_id = $order['stock_id'];
-                    $stock = Stock::findOrFail($stock_id);
-                    //chech quanitty
-                    if ($stock->quantity == 0) {
-                        return ok("Product out of stock");
-                    } elseif ($order['quantity'] > $stock->quantity) {
-                        return ok("Not enough product for stock" . " " . $order['stock_id']);
-                    }
-                    $orders[$key]['price'] = Stock::select('price')->where('id', $stock_id)->first()->price;
-                }
-                $order_create = Order::create($request->only('status') + ['order_number' => Str::random(6)]);
-                foreach ($orders as $item) {
-                    $order_item = OrderItem::create([
-                        'order_id'          => $order_create->id,
-                        'restaurant_id'     => $item['restaurant_id'],
-                        'vendor_id'         => $item['vendor_id'],
-                        'service_type_id'   => $item['service_type_id'],
-                        'stock_id'          => $item['stock_id'],
-                        'quantity'          => $item['quantity'],
-                        'price'             => $item['price'],
-                    ]);
-                    // send mail
-                    $vendors = $order_item->stock->created_by;
-                    $user = User::findOrFail($vendors);
-                    Mail::to($user->email)->send(new OrderMail($order_create, $order_item, $user));
-                    // calculate tax & total amount
-                    $tax = ($order_item->price * $stock->tax) / 100;
-                    $total_amount += ($order_item->price + $tax) * $order_item->quantity;
-                    //manage quantity
-                    $quantity = $order_item->stock->quantity - $order_item->quantity;
-                    $order_item->stock->update(['quantity' => $quantity]);
-                }
+        // foreach ($orders as $rest) {
+        // }
 
-                $data = [
-                    'orders'       => $orders,
-                    'total_amount' => $total_amount
-                ];
-                return ok('Order created successfully!', $data);
+        foreach ($orders as $key => $order) {
+            $restaurant = Restaurant::findOrFail($order['restaurant_id']);
+            $check_user = $restaurant->users()->where('id', $user)->first();
+            if (!$check_user) {
+                return ok("This restaurant not belongs to authenticated user..!");
             }
-            return ok('This Vendor is In-active');
+            $vendor = Vendor::where('id', $order['vendor_id'])->where('status', 'A')->first();
+            if (!$vendor) {
+                return ok('This Vendor is In-active');
+            }
+            //create order
+            $stock_id = $order['stock_id'];
+            $stock = Stock::findOrFail($stock_id);
+            //chech quanitty
+            if ($stock->quantity == 0) {
+                return ok("Product " . $stock->name . " " . "out of stock");
+            } elseif ($order['quantity'] > $stock->quantity) {
+                return ok("Not enough product for stock" . " " . $order['stock_id']);
+            }
+            $orders[$key]['price'] = Stock::select('price')->where('id', $stock->id)->first()->price;
+            $order['price'] = $orders[$key]['price'];
+            // calculate tax & total amount
+            $tax = ($order['price'] * $stock->tax) / 100;
+            $total_amount += ($order['price'] + $tax) * $order['quantity'];
+            //manage quantity
+            $quantity = $stock->quantity - $order['quantity'];
+            $stock->update(['quantity' => $quantity]);
         }
-        return ok("This restaurant not belongs to authenticated user..!");
+        $order_create = Order::create(['order_number' => Str::random(6)]);
+        $items = $order_create->orderItem()->createMany($orders);
+        foreach ($items as $item) {
+            //send mail
+            $user = User::findOrFail($item->stock->created_by);
+            Mail::to($user->email)->send(new OrderMail($order_create, $item, $user));
+        }
+        $data = [
+            'orders'       => $order_create->load('orderItem'),
+            'total_amount' => $total_amount
+        ];
+        return ok('Order created successfully!', $data);
     }
     /**
      * API of order Approve
@@ -198,7 +190,7 @@ class OrderController extends Controller
         $restaurant_id = $bill->restaurant->id;
         $owner         = RestaurantUser::where('restaurant_id', $restaurant_id)->where('is_owner', true)->first();
         $user          = User::findOrFail($owner->user_id);
-        Mail::to($user->email)->send(new BillMail($bill));
+        Mail::to($user->email)->send(new BillMail($bill, $order_item));
 
         return ok('Bill Generated Successfully.!');
     }
@@ -264,7 +256,7 @@ class OrderController extends Controller
             $bill  = RestaurantBill::create([
                 'order_id'              => $order_item->order->id,
                 'restaurant_id'         => $order_item->restaurant->id,
-                'vendor_id'             => $order_item->first()->vendor->id,
+                'vendor_id'             => $order_item->vendor->id,
                 'stock_type_id'         => $order_item->stock->stockType->id,
                 'tax'                   => $order_item->stock->tax,
                 'due_date'              => $due_date,
@@ -277,7 +269,7 @@ class OrderController extends Controller
             $restaurant_id = $bill->restaurant->id;
             $owner         = RestaurantUser::where('restaurant_id', $restaurant_id)->where('is_owner', true)->first();
             $user          = User::findOrFail($owner->user_id);
-            Mail::to($user->email)->send(new BillMail($bill));
+            Mail::to($user->email)->send(new BillMail($bill, $order_item));
             return ok('Bill Generated Successfully.!');
         }
         //when order status is reject

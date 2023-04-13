@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\RestaurantBill;
 use App\Models\RestaurantUser;
 use App\Http\Controllers\Controller;
+use App\Models\OrderItem;
 
 class RestaurantBillController extends Controller
 {
