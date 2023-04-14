@@ -91,17 +91,13 @@ class RestaurantBillController extends Controller
 
         return ok('Restaurant bill retrieved successfully', $bill);
     }
-    public function Invoice($id)
+    public function Invoice($id, $oid)
     {
         $bill           = RestaurantBill::findOrFail($id);
-        $order          = $bill->order;
-        $stock          = $order->orderItem->first()->stock;
-        $restaurant     = $bill->restaurant;
-        $vendor_id      = $order->orderItem->first()->vendor->user_id;
-        $owner          = RestaurantUser::where('restaurant_id', $restaurant->id)->where('is_owner', true)->first();
+        $order_item     = OrderItem::findOrFail($oid);
+        $owner          = RestaurantUser::where('restaurant_id', $bill->restaurant->id)->where('is_owner', true)->first();
         $user           = User::where('id', $owner->user_id)->first();
-        $vendor         = User::where('id', $vendor_id)->first();
-        $pdf = PDF::loadView('invoicePdf', array('bill' => $bill, 'order' => $order, 'user' => $user, 'vendor' => $vendor, 'stock' => $stock));
+        $pdf = PDF::loadView('invoicePdf', array('bill' => $bill, 'user' => $user, 'order_item' => $order_item));
 
         return $pdf->download('invoice' . '-' . now()->format('Y-m-d') . '.pdf');
     }

@@ -50,7 +50,8 @@
         </tr>
     </table>
     <h3 align="right" margin-right=30px>Total Amount:{{ $bill->total_amount }}</h3>
-    <a href="{{ route('bill.download', $bill->id) }}"><button class="button button1">Download</button></a>
+    <a href="{{ route('bill.download', ['id' => $bill->id, 'oid' => $order_item->id]) }}"><button
+            class="button button1">Download</button></a>
     <p>Thank You</p>
 
 </body>

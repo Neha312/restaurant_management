@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
     Route::post('forgetPassword', [AuthController::class, 'forgetPassword']);
     Route::post('resetPassword/{token}', [AuthController::class, 'resetPassword']);
     //download invoice
-    Route::get('invoice/{id}', [RestaurantBillController::class, 'Invoice'])->name('bill.download');
+    Route::get('invoice/{id}/{oid}', [RestaurantBillController::class, 'Invoice'])->name('bill.download');
     //order action route
     Route::get('approve/{id}', [OrderController::class, 'approve'])->name('vendor.approve');
     Route::get('reject/{id}', [OrderController::class, 'reject'])->name('vendor.reject');

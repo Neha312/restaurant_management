@@ -106,8 +106,6 @@ class OrderController extends Controller
         ]);
         $user = auth()->user()->id;
         $orders = $request->orders;
-        // foreach ($orders as $rest) {
-        // }
 
         foreach ($orders as $key => $order) {
             $restaurant = Restaurant::findOrFail($order['restaurant_id']);
@@ -159,12 +157,9 @@ class OrderController extends Controller
     public function approve($id)
     {
         $order_item    = OrderItem::findOrFail($id);
-        $stock        = $order_item->stock;
-        $stockType    = $stock->stockType;
-        $restaurant   =  $order_item->restaurant;
-        $due_date     = Carbon::now()->addDays(6)->format('Y-m-d');
-        $tax = ($stock->price * $stock->tax) / 100;
-        $total_amount = ($stock->price + $tax) * $order_item->quantity;
+        $due_date      = Carbon::now()->addDays(6)->format('Y-m-d');
+        $tax = ($order_item->stock->price * $order_item->stock->tax) / 100;
+        $total_amount = ($order_item->stock->price + $tax) * $order_item->quantity;
         if ($order_item->status == 'R') {
             return ok('This Order is already reject');
         }
@@ -176,10 +171,10 @@ class OrderController extends Controller
         //generate bill
         $bill  = RestaurantBill::create([
             'order_id'              => $order_item->order->id,
-            'restaurant_id'         => $restaurant->id,
+            'restaurant_id'         => $order_item->restaurant->id,
             'vendor_id'             => $order_item->vendor->id,
-            'stock_type_id'         => $stockType->id,
-            'tax'                   => $stock->tax,
+            'stock_type_id'         => $order_item->stock->stockType->id,
+            'tax'                   => $order_item->stock->tax,
             'due_date'              => $due_date,
             'total_amount'          => $total_amount
         ] +
