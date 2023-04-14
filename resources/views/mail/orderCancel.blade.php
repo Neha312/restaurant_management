@@ -23,15 +23,14 @@
 </head>
 
 <body>
-    <p>Hello..{{ $order_item->first()->restaurant->users->first()->first_name }}</p>
-    <p>Order cancale by {{ $order_item->first()->vendor->user->first_name }}</p>
+    <p>Hello..{{ $user->first_name }}</p>
+    <p>Order cancel by {{ $order_item->vendor->user->first_name }}</p>
     <table style="width:100%">
         <tr>
             <th>Order Number</th>
             <th>Restaurant Name</th>
             <th>Service Type</th>
             <th>Quantity</th>
-
         </tr>
         <tr>
             <td>{{ $order_item->order->order_number }}</td>

@@ -108,9 +108,14 @@
     <div class="add-detail mt-10">
         <div class="w-50 float-left mt-10">
             <p class="m-0 pt-5 text-bold w-100">Bill Number - <span class="gray-color">{{ $bill->bill_number }}</span></p>
-            <p class="m-0 pt-5 text-bold w-100">Order Number - <span class="gray-color">{{ $order->order_number }}</span>
+            <p class="m-0 pt-5 text-bold w-100">Order Number - <span
+                    class="gray-color">{{ $bill->order->order_number }}</span>
             </p>
-            <p class="m-0 pt-5 text-bold w-100">Order Date - <span class="gray-color">{{ $order->created_at }}</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Order Date - <span
+                    class="gray-color">{{ $bill->order->created_at }}</span></p>
+            <p class="m-0 pt-5 text-bold w-100">Restaurant Name - <span
+                    class="gray-color">{{ $bill->restaurant->name }}</span>
+            </p>
         </div>
         <div class="w-50 float-left logo mt-10">
             <img src="../public/invoice.png" alt="Logo">
@@ -126,10 +131,11 @@
             <tr>
                 <td>
                     <div class="box-text">
-                        <p>Name:{{ $vendor->first_name . ' ' . $vendor->last_name }}</p>
-                        <p>Address:{{ $vendor->address1 }}</p>
-                        <p>Email:{{ $vendor->email }}</p>
-                        <p>Contact:{{ $vendor->phone }}</p>
+                        <p>Name:{{ $order_item->vendor->user->first_name . ' ' . $order_item->vendor->user->last_name }}
+                        </p>
+                        <p>Address:{{ $order_item->vendor->user->address1 }}</p>
+                        <p>Email:{{ $order_item->vendor->user->email }}</p>
+                        <p>Contact:{{ $order_item->vendor->user->phone }}</p>
                     </div>
                 </td>
                 <td>
@@ -153,9 +159,9 @@
                 <th class="w-50">Total Amount</th>
             </tr>
             <tr align="center">
-                <td>{{ $stock->name }}</td>
-                <td>{{ '$' . $stock->price }}</td>
-                <td>{{ $order->orderItem->first()->quantity }}</td>
+                <td>{{ $order_item->stock->name }}</td>
+                <td>{{ '$' . $order_item->stock->price }}</td>
+                <td>{{ $order_item->quantity }}</td>
                 <td>{{ $bill->tax . '%' }}</td>
                 <td>{{ '$' . $bill->total_amount }}</td>
             </tr>
